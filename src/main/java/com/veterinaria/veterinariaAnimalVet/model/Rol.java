@@ -1,6 +1,5 @@
 package com.veterinaria.veterinariaAnimalVet.model;
 
-import jakarta.persistence.*;
 import java.util.List;
 
 public class Rol {
@@ -83,12 +82,12 @@ public class Rol {
         this.puedeEliminar = puedeEliminar;
     }
 
-    public List<Usuario> getUsuarios() {
-        return usuarios;
-    }
+	public List<Usuario> getUsuarios() {
+		return usuarios;
+	}
 
-    public void setUsuarios(List<Usuario> usuarios) {
-        this.usuarios = usuarios;
-    }
+	public void setUsuarios(List<Usuario> usuarios) {
+		this.usuarios = usuarios;
+	}
 
 }
