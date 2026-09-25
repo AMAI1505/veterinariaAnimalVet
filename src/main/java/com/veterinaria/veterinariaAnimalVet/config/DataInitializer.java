@@ -1,5 +1,6 @@
 package com.veterinaria.veterinariaAnimalVet.config;
 
+import com.veterinaria.veterinariaAnimalVet.model.Rol;
 import com.veterinaria.veterinariaAnimalVet.repository.RolRepository;
 import com.veterinaria.veterinariaAnimalVet.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -27,6 +28,32 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        Rol rolPropietario;
+        if (!rolRepository.existsByNombre("PROPIETARIO")) {
+            rolPropietario = new Rol(
+                    "PROPIETARIO",
+                    "Acceso total al sistema veterinario",
+                    true,   // puedeVer
+                    true,   // puedeCrear
+                    true,   // puedeEditar
+                    true    // puedeEliminar
+            );
+            rolPropietario = rolRepository.save(rolPropietario);
+            System.out.println("Rol PROPIETARIO creado.");
+        } else {
+            rolPropietario = rolRepository.findByNombre("PROPIETARIO").orElseThrow();
+        }
 
+        if (!rolRepository.existsByNombre("USUARIO")) {
+            rolRepository.save(new Rol(
+                    "USUARIO",
+                    "Acceso de usuario registrado: puede consultar y crear registros.",
+                    true,
+                    true,
+                    false,
+                    false
+            ));
+            System.out.println("Rol USUARIO creado.");
+        }
     }
 }
