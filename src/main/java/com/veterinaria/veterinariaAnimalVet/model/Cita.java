@@ -48,19 +48,6 @@ public class Cita {
     public Cita() {
     }
 
-    public Cita(Long id, @NotNull(message = "La fecha y hora son obligatorias") LocalDateTime fechaHora,
-            @NotNull(message = "La mascota es obligatoria") Mascota mascota,
-            @NotNull(message = "El dueño es obligatorio") Cliente cliente,
-            @NotBlank(message = "El motivo es obligatorio") @Size(min = 3, max = 100, message = "El motivo debe tener entre 3 y 100 caracteres") String motivo,
-            @NotBlank(message = "El estado de la cita es obligatorio") String estado) {
-        this.id = id;
-        this.fechaHora = fechaHora;
-        this.mascota = mascota;
-        this.cliente = cliente;
-        this.motivo = motivo;
-        this.estado = estado;
-    }
-
     public Long getId() {
         return id;
     }
