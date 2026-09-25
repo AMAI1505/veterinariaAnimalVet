@@ -1,16 +1,40 @@
 package com.veterinaria.veterinariaAnimalVet.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
+@Entity
+@Table(name = "roles")
 public class Rol {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "El nombre del rol es obligatorio")
+    @Size(min=3, max = 30, message = "El nombre debe tener entre 3 y 30 caracteres")
+    @Column(nullable = false, unique = true, length = 30)
     private String nombre;
+
+    @Size(max = 100, message = "La descripción no puede exceder 100 caracteres")
+    @Column(length = 100)
     private String descripcion;
+
+    @Column(nullable = false)
     private boolean puedeVer = true;
+
+    @Column(nullable = false)
     private boolean puedeCrear = false;
+
+    @Column(nullable = false)
     private boolean puedeEditar = false;
+
+    @Column(nullable = false)
     private boolean puedeEliminar = false;
+
+    @OneToMany(mappedBy = "rol", fetch = FetchType.LAZY)
     private List<Usuario> usuarios;
 
     public Rol() {
@@ -82,12 +106,11 @@ public class Rol {
         this.puedeEliminar = puedeEliminar;
     }
 
-	public List<Usuario> getUsuarios() {
-		return usuarios;
-	}
+    public List<Usuario> getUsuarios() {
+        return usuarios;
+    }
 
-	public void setUsuarios(List<Usuario> usuarios) {
-		this.usuarios = usuarios;
-	}
-
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
 }
