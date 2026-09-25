@@ -1,6 +1,7 @@
 package com.veterinaria.veterinariaAnimalVet.config;
 
 import com.veterinaria.veterinariaAnimalVet.model.Rol;
+import com.veterinaria.veterinariaAnimalVet.model.Usuario;
 import com.veterinaria.veterinariaAnimalVet.repository.RolRepository;
 import com.veterinaria.veterinariaAnimalVet.repository.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -53,7 +54,17 @@ public class DataInitializer implements CommandLineRunner {
                     false,
                     false
             ));
-            System.out.println("Rol USUARIO creado.");
+        }
+
+        if (!usuarioRepository.findByUsername("propietario").isPresent()) {
+            Usuario propietario = new Usuario();
+            propietario.setUsername("propietario");
+          
+            propietario.setPassword(passwordEncoder.encode(initialAdminPassword));
+            propietario.setRol(rolPropietario);
+            propietario.setEnabled(true);
+            usuarioRepository.save(propietario);
+            System.out.println("Usuario administrador inicial creado.");
         }
     }
 }
