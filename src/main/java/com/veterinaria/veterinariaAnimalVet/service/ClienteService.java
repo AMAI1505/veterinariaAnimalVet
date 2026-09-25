@@ -32,4 +32,16 @@ public class ClienteService {
     public void deleteById(Long id) {
         repo.deleteById(id);
     }
+
+    public boolean existsById(Long id) {
+        return repo.existsById(id);
+    }
+
+    public boolean existsByDni(String dni) {
+        return repo.existsByDni(dni);
+    }
+
+    public boolean existsByDniAndIdNot(String dni, Long id) {
+        return repo.existsByDniAndIdNot(dni, id);
+    }
 }
