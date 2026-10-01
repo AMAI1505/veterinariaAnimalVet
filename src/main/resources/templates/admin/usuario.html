@@ -69,3 +69,63 @@
                 </table>
             </div>
         </div>
+        <div class="modal fade" id="modalCrearUsuario" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/admin/usuarios}" method="post" th:object="${nuevoUsuario}" id="formUsuario" class="needs-validation" novalidate>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title">Registrar Nuevo Usuario</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <!-- Username -->
+                            <div class="mb-3">
+                                <label for="usernameInput" class="form-label">Nombre de Usuario</label>
+                                <input type="text" th:field="*{username}" class="form-control" id="usernameInput" placeholder="Ingresa el usuario" required minlength="3" maxlength="50">
+                                <div class="invalid-feedback">El usuario es obligatorio y debe tener al menos 3 caracteres.</div>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                            </div>
+                            
+                            <!-- Password -->
+                            <div class="mb-3">
+                                <label for="pwdUsuario" class="form-label">Contraseña</label>
+                                <input type="password" th:field="*{password}" id="pwdUsuario" class="form-control" placeholder="Mínimo 6 caracteres" required minlength="6">
+                                <div class="invalid-feedback">La contraseña es obligatoria y debe tener al menos 6 caracteres.</div>
+                                <div class="text-danger small" th:if="${errorPassword}" th:text="${errorPassword}"></div>
+                            </div>
+                            
+                            <!-- Confirmar Password -->
+                            <div class="mb-3">
+                                <label for="pwdConfirm" class="form-label">Confirmar Contraseña</label>
+                                <input type="password" id="pwdConfirm" class="form-control" placeholder="Repite la contraseña" required minlength="6">
+                                <div class="text-danger small d-none" id="pwdMatchError">Las contraseñas no coinciden</div>
+                            </div>
+                            
+                            <!-- Rol -->
+                            <div class="mb-3">
+                                <label for="selectRol" class="form-label">Selecciona Rol</label>
+                                <select th:field="*{rol.id}" class="form-select" id="selectRol" required>
+                                    <option value="">-- Selecciona --</option>
+                                    <option th:each="r : ${listaRoles}" th:value="${r.id}" th:text="${r.nombre}"></option>
+                                </select>
+                                <div class="invalid-feedback">Debes seleccionar un rol.</div>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('rol')}" th:errors="*{rol}"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Registrar Usuario</button>
+                        </div>
+
+                        <!-- Reabrir modal si hay errores -->
+                        <script th:if="${#fields.hasAnyErrors()}">
+                            document.addEventListener("DOMContentLoaded", function() {
+                                new bootstrap.Modal(document.getElementById('modalCrearUsuario')).show();
+                            });
+                        </script>
+                    </form>
+                </div>
+            </div>
+        </div>
