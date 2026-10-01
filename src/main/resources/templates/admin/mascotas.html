@@ -1,63 +1,66 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
+
     <div th:replace="~{layout/base :: plantilla('Gestión de Pacientes - AnimalVet', ~{::main})}">
 
         <main>
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>
-                    <b>Historial de Mascotas</b> 
-                    <span class="badge bg-dark fs-6" th:text="'Usuario: ' + ${rolNombre != null ? rolNombre : 'Invitado'}"></span>
+
+                    <b>Fichas Clínicas</b> 
+                    <span class="badge bg-secondary fs-6" th:text="'Rol: ' + ${rolNombre != null ? rolNombre : ''}"></span>
                 </h2>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAgregar"
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregar"
                         th:if="${puedeCrear or #authorization.expression('hasRole(''PROPIETARIO'')')}"
                         onclick="document.getElementById('formMascota').reset(); document.getElementById('clienteId').value = ''; document.getElementById('nombreDuenoInput').value = '';">
-                    + Nueva Mascota
+                    Agregar Mascota
                 </button>
             </div>
 
-            <div class="alert alert-info alert-dismissible fade show" th:if="${mensajeExito}" role="alert">
+            <div class="alert alert-success alert-dismissible fade show" th:if="${mensajeExito}" role="alert">
                 <span th:text="${mensajeExito}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
             <div class="mb-3" th:unless="${#lists.isEmpty(listaMascotas)}">
-                <input type="text" id="busMascotas" class="form-control form-control-lg" placeholder="Filtrar por nombre, raza o propietario...">
+
+                <input type="text" id="busMascotas" class="form-control" placeholder="Buscar por mascota, raza o dueño...">
             </div>
 
-            <div class="row" id="contenedorMascotas">
+             <div class="row" id="contenedorMascotas">
                 <div class="col-md-4 mb-4" th:each="m : ${listaMascotas}">
-                    <div class="card h-100 shadow border-0" th:classappend="${mascotaEditar != null and mascotaEditar.id == m.id} ? 'border border-primary border-3' : ''">
-                        <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=500" class="card-img-top" alt="Imagen Mascota" style="height: 200px; object-fit: cover;">
+                    <div class="card h-100 shadow-sm border-0" th:classappend="${mascotaEditar != null and mascotaEditar.id == m.id} ? 'border border-warning border-3' : ''">
+                        <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=500" class="card-img-top" alt="Foto Mascota" style="height: 200px; object-fit: cover;">
                         <div class="card-body">
-                            <h5 class="card-title text-secondary fw-bold" th:text="${m.nombre}"></h5>
-                            <hr class="my-2">
+                            <h5 class="card-title text-primary fw-bold" th:text="${m.nombre}"></h5>
+                            <hr>
                             <ul class="list-unstyled mb-0">
                                 <li><strong>Especie:</strong> <span th:text="${m.especie}"></span></li>
                                 <li><strong>Raza:</strong> <span th:text="${m.raza}"></span></li>
-                                <li><strong>Peso (kg):</strong> <span th:text="${m.peso}"></span></li>
-                                <li><strong>Color de pelo:</strong> <span th:text="${m.color}"></span></li>
-                                <li><strong>Propietario:</strong> 
-                                    <span th:text="${m.cliente != null ? m.cliente.nombre : 'No asignado'}"></span>
+                                <li><strong>Peso:</strong> <span th:text="${m.peso}"></span></li>
+                                <li><strong>Color:</strong> <span th:text="${m.color}"></span></li>
+                                <li><strong>Dueño:</strong> 
+                                    <span th:text="${m.cliente != null ? m.cliente.nombre : 'Sin dueño asignado'}"></span>
                                 </li>
                             </ul>
                         </div>
 
-                        <div class="card-footer bg-light border-0 pt-0" th:if="${puedeEditar or puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}">
+                        <div class="card-footer bg-white border-0 pt-0" th:if="${puedeEditar or puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}">
                             <div class="d-flex gap-2">
 
                                 <a th:if="${puedeEditar or #authorization.expression('hasRole(''PROPIETARIO'')')}"
                                    th:href="@{/mascotas/editar/{id}(id=${m.id})}"
-                                   class="btn btn-sm btn-outline-primary flex-fill text-center">
-                                    Modificar
+                                   class="btn btn-sm btn-outline-warning flex-fill text-center">
+                                    Editar
                                 </a>
 
                                 <form th:if="${puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}"
                                       th:action="@{/mascotas/eliminar}" method="post" class="flex-fill">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                     <input type="hidden" name="id" th:value="${m.id}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100" onclick="return confirm('¿Está seguro de borrar este registro?');">
-                                        Remover
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100" onclick="return confirm('¿Eliminar esta ficha clínica de forma permanente?');">
+                                        Eliminar
                                     </button>
                                 </form>
                             </div>
@@ -241,7 +244,6 @@
                 </div>
             </div>
 
-            <!-- Abrir modal de edición automáticamente si hay mascotaEditar -->
             <script th:if="${mascotaEditar != null}">
                 document.addEventListener("DOMContentLoaded", function() {
                     new bootstrap.Modal(document.getElementById('modalEditarMascota')).show();
@@ -250,7 +252,6 @@
 
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
-                    // Filtro/Buscador de mascotas
                     const inputFiltro = document.getElementById("busMascotas");
                     if (inputFiltro) {
                         inputFiltro.addEventListener("keyup", function () {
