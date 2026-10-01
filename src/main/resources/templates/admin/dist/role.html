@@ -74,3 +74,70 @@
                 </table>
             </div>
         </div>
+        <div class="modal fade" id="modalCrearRol" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/admin/roles}" method="post" th:object="${nuevoRol}" class="needs-validation" novalidate>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">Crear Nuevo Rol</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            <!-- Nombre del rol -->
+                            <div class="mb-3">
+                                <label for="nombreRol" class="form-label">Nombre del Rol</label>
+                                <input type="text" th:field="*{nombre}" class="form-control text-uppercase" id="nombreRol"
+                                       placeholder="Ej: ASISTENTE" required minlength="3" maxlength="30"
+                                       oninput="this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '')">
+                                <div class="invalid-feedback">El nombre del rol es obligatorio y debe tener al menos 3 caracteres.</div>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                            </div>
+                            
+                            <!-- Descripción -->
+                            <div class="mb-3">
+                                <label for="descripcionRol" class="form-label">Descripción</label>
+                                <input type="text" th:field="*{descripcion}" class="form-control" id="descripcionRol"
+                                       placeholder="¿Qué hace este rol?" maxlength="100">
+                            </div>
+                            
+                            <!-- Permisos checkboxes -->
+                            <div class="mb-3">
+                                <label class="form-label"><b>Permisos:</b></label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:field="*{puedeVer}" id="puedeVer">
+                                    <label class="form-check-label" for="puedeVer">Ver registros</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:field="*{puedeCrear}" id="puedeCrear">
+                                    <label class="form-check-label" for="puedeCrear">Crear registros</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:field="*{puedeEditar}" id="puedeEditar">
+                                    <label class="form-check-label" for="puedeEditar">Editar registros</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:field="*{puedeEliminar}" id="puedeEliminar">
+                                    <label class="form-check-label" for="puedeEliminar">Eliminar registros</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Crear Rol</button>
+                        </div>
+
+                        <!-- Reabrir modal si hay errores -->
+                        <script th:if="${#fields.hasAnyErrors()}">
+                            document.addEventListener("DOMContentLoaded", function() {
+                                new bootstrap.Modal(document.getElementById('modalCrearRol')).show();
+                            });
+                        </script>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</html>
