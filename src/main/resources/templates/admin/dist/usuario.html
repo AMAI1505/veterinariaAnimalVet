@@ -129,3 +129,22 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            // Validar que las contraseñas coincidan antes de enviar
+            document.getElementById('formUsuario').addEventListener('submit', function(e) {
+                const pwd = document.getElementById('pwdUsuario').value;
+                const confirm = document.getElementById('pwdConfirm').value;
+                const error = document.getElementById('pwdMatchError');
+                if (pwd !== confirm) {
+                    e.preventDefault();
+                    error.classList.remove('d-none');
+                    document.getElementById('pwdConfirm').classList.add('is-invalid');
+                } else {
+                    error.classList.add('d-none');
+                }
+            });
+        </script>
+    </main>
+</div>
+</html>
