@@ -31,3 +31,21 @@
         <div class="col-12 text-center text-muted py-5" th:if="${#lists.isEmpty(listaRoles)}">
             <p>No hay roles definidos.</p>
         </div>
+
+         <div class="card border-0 shadow-sm mb-4" th:unless="${#lists.isEmpty(listaRoles)}">
+            <div class="card-header bg-dark text-white">
+                <strong>Roles Definidos</strong>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th class="text-center">VER</th>
+                            <th class="text-center">CREAR</th>
+                            <th class="text-center">EDITAR</th>
+                            <th class="text-center">ELIMINAR</th>
+                            <th class="text-center">Acción</th>
+                        </tr>
+                    </thead>
