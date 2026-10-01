@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="~{layout/base :: plantilla('Panel de Administración - AnimalVet', ~{::main})}">
+    <main>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0">
+                <i class="bi bi-gear-fill me-2 text-primary"></i><b>Panel de Administración</b>
+            </h1>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <h5 class="mb-0 fw-bold">Gestión de Roles</h5>
+                        </div>
+                        <p class="text-muted small mb-3">
+                            Crea roles dinámicos con permisos personalizados: VER, CREAR, EDITAR, ELIMINAR.
+                        </p>
+                        <a th:href="@{/admin/roles}" class="btn btn-primary w-100">
+                            Administrar Roles
+                        </a>
+                    </div>
+                </div>
+            </div>
