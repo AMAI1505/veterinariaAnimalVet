@@ -49,3 +49,28 @@
                             <th class="text-center">Acción</th>
                         </tr>
                     </thead>
+                    <tbody>
+                        <tr th:each="rol : ${listaRoles}">
+                            <td th:text="${rol.nombre}"></td>
+                            <td th:text="${rol.descripcion ?: 'Sin descripción'}"></td>
+                            <td class="text-center" th:text="${rol.puedeVer} ? 'Sí' : 'No'"></td>
+                            <td class="text-center" th:text="${rol.puedeCrear} ? 'Sí' : 'No'"></td>
+                            <td class="text-center" th:text="${rol.puedeEditar} ? 'Sí' : 'No'"></td>
+                            <td class="text-center" th:text="${rol.puedeEliminar} ? 'Sí' : 'No'"></td>
+                            <td class="text-center">
+                                <form th:action="@{/admin/roles/eliminar}" method="post" style="display:inline;"
+                                      th:unless="${rol.nombre == 'PROPIETARIO'}">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <input type="hidden" name="id" th:value="${rol.id}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('¿Seguro que deseas eliminar este rol?');">
+                                        Eliminar
+                                    </button>
+                                </form>
+                                <span th:if="${rol.nombre == 'PROPIETARIO'}">Protegido</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
