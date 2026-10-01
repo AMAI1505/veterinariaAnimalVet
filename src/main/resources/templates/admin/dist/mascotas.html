@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+    <div th:replace="~{layout/base :: plantilla('Gestión de Mascotas - AnimalVet', ~{::main})}">
+
+        <main>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <b>Fichas Clínicas</b> 
+                    <span class="badge bg-secondary fs-6" th:text="'Rol: ' + ${rolNombre != null ? rolNombre : ''}"></span>
+                </h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregar"
+                        th:if="${puedeCrear or #authorization.expression('hasRole(''PROPIETARIO'')')}"
+                        onclick="document.getElementById('formMascota').reset(); document.getElementById('clienteId').value = ''; document.getElementById('nombreDuenoInput').value = '';">
+                    Agregar Mascota
+                </button>
+            </div>
+
+            <div class="alert alert-success alert-dismissible fade show" th:if="${mensajeExito}" role="alert">
+                <span th:text="${mensajeExito}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="mb-3" th:unless="${#lists.isEmpty(listaMascotas)}">
+                <input type="text" id="busMascotas" class="form-control" placeholder="Buscar por mascota, raza o dueño...">
+            </div>
