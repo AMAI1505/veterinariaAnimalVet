@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+    <div th:replace="~{layout/base :: plantilla('Registro de Clientes - AnimalVet', ~{::main})}">
+
+        <main>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <b>Panel de Clientes</b> 
+                    <span class="badge bg-secondary fs-6" th:text="'Rol: ' + ${rolNombre != null ? rolNombre : ''}"></span>
+                </h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistro"
+                        th:if="${puedeCrear or #authorization.expression('hasRole(''PROPIETARIO'')')}">
+                    Nuevo Cliente
+                </button>
+            </div>
+
+            <div class="alert alert-success alert-dismissible fade show" th:if="${mensajeExito}" role="alert">
+                <span th:text="${mensajeExito}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="mb-3" th:unless="${#lists.isEmpty(listaClientes)}">
+                <input type="text" id="busClientes" class="form-control" onkeyup="filtro()" placeholder="Buscar por DNI o Nombre...">
+            </div>
+
+            <div class="col-12 text-center text-muted py-5" th:if="${#lists.isEmpty(listaClientes)}">
+                <p>No hay clientes registrados actualmente.</p>
+            </div>
+
+            <div class="card shadow border-0" th:unless="${#lists.isEmpty(listaClientes)}">
+                <div class="card-header bg-dark text-white">
+                    <strong>Clientes Registrados</strong>
+                </div>
