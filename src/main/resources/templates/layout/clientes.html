@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+    <div th:replace="~{layout/base :: plantilla('Registro de Clientes - AnimalVet', ~{::main})}">
+
+        <main>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <b>Panel de Clientes</b> 
+                    <span class="badge bg-secondary fs-6" th:text="'Rol: ' + ${rolNombre != null ? rolNombre : ''}"></span>
+                </h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistro"
+                        th:if="${puedeCrear or #authorization.expression('hasRole(''PROPIETARIO'')')}">
+                    Nuevo Cliente
+                </button>
+            </div>
+
+            <div class="alert alert-success alert-dismissible fade show" th:if="${mensajeExito}" role="alert">
+                <span th:text="${mensajeExito}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="mb-3" th:unless="${#lists.isEmpty(listaClientes)}">
+                <input type="text" id="busClientes" class="form-control" onkeyup="filtro()" placeholder="Buscar por DNI o Nombre...">
+            </div>
+
+            <div class="col-12 text-center text-muted py-5" th:if="${#lists.isEmpty(listaClientes)}">
+                <p>No hay clientes registrados actualmente.</p>
+            </div>
+
+            <div class="card shadow border-0" th:unless="${#lists.isEmpty(listaClientes)}">
+                <div class="card-header bg-dark text-white">
+                    <strong>Clientes Registrados</strong>
+                </div>
+                <table class="table table-hover mb-0" id="tabClientes">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>DNI</th>
+                            <th>Nombre</th>
+                            <th>Teléfono</th>
+                            <th>Mascotas Registradas</th> 
+                            <th class="text-center" th:if="${puedeEditar or puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${listaClientes}" th:classappend="${clienteEditar != null and clienteEditar.id == c.id} ? 'table-warning' : ''">
+                            <td th:text="${c.id}"></td>
+                            <td th:text="${c.dni}"></td>
+                            <td th:text="${c.nombre}"></td>
+                            <td th:text="${c.telefono}"></td>
+                            <td>
+                                <span th:if="${#lists.isEmpty(c.mascotas)}">Ninguna</span>
+                                <span th:unless="${#lists.isEmpty(c.mascotas)}">
+                                    <span th:each="m, iterStat : ${c.mascotas}" 
+                                          th:text="${m.nombre} + ${!iterStat.last ? ', ' : ''}"></span>
+                                </span>
+                            </td>
+                            <td class="text-center" th:if="${puedeEditar or puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}">
+                                <!-- Botón Editar -->
+                                <a th:if="${puedeEditar or #authorization.expression('hasRole(''PROPIETARIO'')')}"
+                                   th:href="@{/clientes/editar/{id}(id=${c.id})}"
+                                   class="btn btn-sm btn-outline-warning me-1">
+                                    Editar
+                                </a>
+
+                                <form th:if="${puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}"
+                                      th:action="@{/clientes/eliminar}" method="post" style="display:inline;">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <input type="hidden" name="id" th:value="${c.id}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Seguro que deseas eliminar este cliente permanentemente?');">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal fade" id="modalRegistro" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/clientes}" method="post" th:object="${nuevoCliente}" class="needs-validation" novalidate>
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title">Registrar Nuevo Cliente</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="dni" class="form-label">DNI</label>
+                                    <input type="text" th:field="*{dni}" class="form-control" id="dni" placeholder="Ingresa DNI (8 dígitos)" required pattern="^[0-9]{8}$" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <div class="invalid-feedback">El DNI es obligatorio y debe tener 8 dígitos.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">Nombre Completo</label>
+                                    <input type="text" th:field="*{nombre}" class="form-control" id="nombre" placeholder="Ingresa el nombre completo" required minlength="3" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                    <div class="invalid-feedback">El nombre completo es obligatorio, debe tener al menos 3 caracteres.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="telefono" class="form-label">Teléfono / Celular</label>
+                                    <input type="text" th:field="*{telefono}" class="form-control" id="telefono" placeholder="Ingresa teléfono (Ej: 9XXXXXXXX)" required pattern="^9[0-9]{8}$" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <div class="invalid-feedback">El teléfono es obligatorio, debe tener 9 dígitos y empezar con 9.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+                            </div>
+                            
+                            <script th:if="${#fields.hasAnyErrors() and clienteEditar == null}">
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    var myModal = new bootstrap.Modal(document.getElementById('modalRegistro'));
+                                    myModal.show();
+                                });
+                            </script>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalEditar" tabindex="-1" th:if="${clienteEditar != null}">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/clientes/editar}" method="post" th:object="${clienteEditar}" class="needs-validation" novalidate>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" th:field="*{id}">
+                            <div class="modal-header bg-warning text-dark">
+                                <h5 class="modal-title">Editar Cliente</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="dniEdit" class="form-label">DNI</label>
+                                    <input type="text" th:field="*{dni}" class="form-control" id="dniEdit" required pattern="[0-9]{8}" maxlength="8" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <div class="invalid-feedback">El DNI es obligatorio y debe tener 8 dígitos.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nombreEdit" class="form-label">Nombre Completo</label>
+                                    <input type="text" th:field="*{nombre}" class="form-control" id="nombreEdit" required minlength="3" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                    <div class="invalid-feedback">El nombre completo es obligatorio, debe tener al menos 3 caracteres.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="telefonoEdit" class="form-label">Teléfono</label>
+                                    <input type="text" th:field="*{telefono}" class="form-control" id="telefonoEdit" required pattern="^9[0-9]{8}$" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <div class="invalid-feedback">El teléfono es obligatorio, debe tener 9 dígitos y empezar con 9.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <a th:href="@{/clientes}" class="btn btn-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-warning text-dark">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Abrir modal de edición automáticamente si hay clienteEditar -->
+            <script th:if="${clienteEditar != null}">
+                document.addEventListener("DOMContentLoaded", function() {
+                    new bootstrap.Modal(document.getElementById('modalEditar')).show();
+                });
+            </script>
+
+            <script>
+                function filtro() {
+                    let f = document.getElementById("busClientes").value.toUpperCase();
+                    let tr = document.getElementById("tabClientes").getElementsByTagName("tr");
+                    for (let i = 1; i < tr.length; i++) {
+                        tr[i].style.display = tr[i].innerText.toUpperCase().includes(f) ? "" : "none";
+                    }
+                }
+            </script>
+        </main>
+
+    </div>
+</html>
