@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+    <div th:replace="~{layout/base :: plantilla('Citas Médicas - AnimalVet', ~{::main})}">
+
+        <main>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <b>Citas Médicas</b> 
+                    <span class="badge bg-secondary fs-6" th:text="'Rol actual: ' + ${rolNombre != null ? rolNombre : ''}"></span>
+                </h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCita"
+                        th:if="${puedeCrear or #authorization.expression('hasRole(''PROPIETARIO'')')}">
+                    Nueva Cita
+                </button>
+            </div>
+
+            <div class="alert alert-success alert-dismissible fade show" th:if="${mensajeExito}" role="alert">
+                <span th:text="${mensajeExito}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="mb-3" th:unless="${#lists.isEmpty(listaCitas)}">
+                <input type="text" id="busCitas" class="form-control" onkeyup="filtroCitas()" placeholder="Buscar por mascota o dueño...">
+            </div>
+
+            <div class="col-12 text-center text-muted py-5" th:if="${#lists.isEmpty(listaCitas)}">
+                <p>No hay citas registradas actualmente.</p>
+            </div>
+
+            <div class="card shadow border-0" th:unless="${#lists.isEmpty(listaCitas)}">
+                <div class="card-header bg-dark text-white">
+                    <strong>Listado de Citas</strong>
+                </div>
+                <table class="table table-hover mb-0" id="tabCitas">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Hora / Fecha</th>
+                            <th>Mascota</th>
+                            <th>Dueño</th>
+                            <th>Motivo</th>
+                            <th>Estado</th>
+                            <th class="text-center" th:if="${puedeEditar or puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="cita : ${listaCitas}" th:classappend="${citaEditar != null and citaEditar.id == cita.id} ? 'table-warning' : ''">
+                            <td th:text="${cita.fechaHora}"></td>
+                            <td th:text="${cita.mascota != null ? cita.mascota.nombre : 'Sin mascota'}"></td>
+                            <td th:text="${cita.cliente != null ? cita.cliente.nombre : 'Sin dueño'}"></td>
+                            <td th:text="${cita.motivo}"></td>
+                            <td>
+                                <span th:class="${cita.estado == 'Pendiente' ? 'badge bg-warning text-dark' : 'badge bg-success'}" 
+                                      th:text="${cita.estado}"></span>
+                            </td>
+                            <td class="text-center" th:if="${puedeEditar or puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}">
+                                <!-- Botón Editar -->
+                                <a th:if="${puedeEditar or #authorization.expression('hasRole(''PROPIETARIO'')')}"
+                                   th:href="@{/citas/editar/{id}(id=${cita.id})}"
+                                   class="btn btn-sm btn-outline-warning me-1">
+                                    Editar
+                                </a>
+
+                                <form th:if="${puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}"
+                                      th:action="@{/citas/eliminar}" method="post" style="display:inline;">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <input type="hidden" name="id" th:value="${cita.id}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Seguro que deseas eliminar esta cita?');">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal fade" id="modalCita" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/citas}" method="post" th:object="${nuevaCita}" class="needs-validation" novalidate>
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title">Registrar Nueva Cita</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="fechaHora" class="form-label">Fecha y Hora</label>
+                                    <input type="datetime-local" th:field="*{fechaHora}" class="form-control" id="fechaHora" required>
+                                    <div class="invalid-feedback">La fecha y hora no son validas.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('fechaHora')}" th:errors="*{fechaHora}"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="mascota" class="form-label">Selecciona Mascota</label>
+                                    <select class="form-select" id="mascota" th:field="*{mascota.id}" onchange="actualizarDueno()" required>
+                                        <option value="" selected>-- Selecciona --</option>
+                                        <option th:each="m : ${listaMascotas}"
+                                                th:value="${m.id}" 
+                                                th:data-dueno="${m.cliente != null ? m.cliente.nombre : 'Sin dueño'}"
+                                                th:data-clienteid="${m.cliente != null ? m.cliente.id : ''}"
+                                                th:text="${m.nombre} + ' (' + ${m.especie} + ')'">
+                                        </option>
+                                    </select>
+                                    <div class="invalid-feedback">Debes seleccionar una mascota.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('mascota')}" th:errors="*{mascota}"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="duenoVisible" class="form-label">Dueño de la Mascota</label>
+                                    <input type="hidden" id="clienteId" th:field="*{cliente.id}" required>
+                                    <input type="text" class="form-control" id="duenoVisible" placeholder="Se completará automáticamente..." readonly>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="motivo" class="form-label">Motivo de la Cita</label>
+                                    <input type="text" th:field="*{motivo}" class="form-control" id="motivo" placeholder="Ingresa motivo de consulta" required minlength="3" maxlength="100">
+                                    <div class="invalid-feedback">El motivo es obligatorio y debe tener al menos 3 caracteres.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="estado" class="form-label">Estado</label>
+                                    <select th:field="*{estado}" class="form-select" id="estado" required>
+                                        <option value="Pendiente">Pendiente</option>
+                                        <option value="Atendido">Atendido</option>
+                                    </select>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar Cita</button>
+                            </div>
+                            
+                            <script th:if="${#fields.hasAnyErrors() and citaEditar == null}">
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    var myModal = new bootstrap.Modal(document.getElementById('modalCita'));
+                                    myModal.show();
+                                });
+                            </script>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalEditarCita" tabindex="-1" th:if="${citaEditar != null}">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/citas/editar}" method="post" th:object="${citaEditar}" class="needs-validation" novalidate>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" th:field="*{id}">
+                            <div class="modal-header bg-warning text-dark">
+                                <h5 class="modal-title">Editar Cita</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="fechaHoraEdit" class="form-label">Fecha y Hora</label>
+                                    <input type="datetime-local" th:field="*{fechaHora}" class="form-control" id="fechaHoraEdit" required>
+                                    <div class="invalid-feedback">Obligatorio.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="mascotaEdit" class="form-label">Mascota</label>
+                                    <select class="form-select" th:field="*{mascota.id}" id="mascotaEdit" onchange="actualizarDuenoEdit()" required>
+                                        <option value="">-- Selecciona --</option>
+                                        <option th:each="m : ${listaMascotas}"
+                                                th:value="${m.id}"
+                                                th:selected="${citaEditar.mascota != null and citaEditar.mascota.id == m.id}"
+                                                th:data-dueno="${m.cliente != null ? m.cliente.nombre : ''}"
+                                                th:data-clienteid="${m.cliente != null ? m.cliente.id : ''}"
+                                                th:text="${m.nombre} + ' (' + ${m.especie} + ')'">
+                                        </option>
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona una mascota.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="duenoVisibleEdit" class="form-label">Dueño</label>
+                                    <input type="hidden" id="clienteIdEdit" th:field="*{cliente.id}">
+                                    <input type="text" class="form-control" id="duenoVisibleEdit"
+                                           th:value="${citaEditar.cliente != null ? citaEditar.cliente.nombre : ''}"
+                                           placeholder="Dueño" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="motivoEdit" class="form-label">Motivo</label>
+                                    <input type="text" th:field="*{motivo}" class="form-control" id="motivoEdit" required minlength="5" maxlength="100">
+                                    <div class="invalid-feedback">Obligatorio (mín 5 caracteres).</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="estadoEdit" class="form-label">Estado</label>
+                                    <select th:field="*{estado}" class="form-select" id="estadoEdit" required>
+                                        <option value="Pendiente">Pendiente</option>
+                                        <option value="Atendido">Atendido</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <a th:href="@{/citas}" class="btn btn-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-warning text-dark">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Abrir modal de edición automáticamente si hay citaEditar -->
+            <script th:if="${citaEditar != null}">
+                document.addEventListener("DOMContentLoaded", function() {
+                    new bootstrap.Modal(document.getElementById('modalEditarCita')).show();
+                });
+            </script>
+
+            <script>
+                function filtroCitas() {
+                    let f = document.getElementById("busCitas").value.toUpperCase();
+                    let tr = document.getElementById("tabCitas").getElementsByTagName("tr");
+                    for (let i = 1; i < tr.length; i++) {
+                        let mascota = tr[i].getElementsByTagName("td")[1].innerText;
+                        let dueno = tr[i].getElementsByTagName("td")[2].innerText;
+                        if (mascota.toUpperCase().includes(f) || dueno.toUpperCase().includes(f)) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                };
+
+                function actualizarDueno() {
+                    const selectMascota = document.getElementById("mascota");
+                    const inputDuenoVisible = document.getElementById("duenoVisible");
+                    const inputClienteId = document.getElementById("clienteId");
+                    const opcionSeleccionada = selectMascota.options[selectMascota.selectedIndex];
+                    
+                    if (opcionSeleccionada.value !== "") {
+                        inputDuenoVisible.value = opcionSeleccionada.getAttribute("data-dueno");
+                        inputClienteId.value = opcionSeleccionada.getAttribute("data-clienteid");
+                    } else {
+                        inputDuenoVisible.value = "";
+                        inputClienteId.value = "";
+                    }
+                }
+
+                function actualizarDuenoEdit() {
+                    const sel = document.getElementById("mascotaEdit");
+                    const opt = sel.options[sel.selectedIndex];
+                    document.getElementById("duenoVisibleEdit").value = opt.value ? opt.getAttribute("data-dueno") : "";
+                    document.getElementById("clienteIdEdit").value = opt.value ? opt.getAttribute("data-clienteid") : "";
+                }
+
+                document.addEventListener("DOMContentLoaded", function() {
+                    const now = new Date();
+                    // Ajustar zona horaria
+                    const offset = now.getTimezoneOffset();
+                    const localNow = new Date(now.getTime() - (offset * 60 * 1000));
+                    const localISOTime = localNow.toISOString().slice(0, 16);
+                    
+                    const fechaHora = document.getElementById("fechaHora");
+                    if(fechaHora) fechaHora.setAttribute("min", localISOTime);
+                    
+                    const fechaHoraEdit = document.getElementById("fechaHoraEdit");
+                    if(fechaHoraEdit) fechaHoraEdit.setAttribute("min", localISOTime);
+                });
+            </script>
+        </main>
+
+    </div>
+</html>
