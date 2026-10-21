@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 150" width="100%" height="100%">
+  <g transform="translate(10, 15)">
+    <ellipse cx="30" cy="40" rx="9" ry="14" fill="#2E86C1" transform="rotate(-25 30 40)"/>
+    <ellipse cx="55" cy="25" rx="9" ry="15" fill="#2E86C1"/>
+    <ellipse cx="85" cy="25" rx="9" ry="15" fill="#2E86C1"/>
+    <ellipse cx="110" cy="40" rx="9" ry="14" fill="#2E86C1" transform="rotate(25 110 40)"/>
+    
+    <path d="M 40 65 Q 70 45 100 65 Q 120 90 100 110 Q 70 120 40 110 Q 20 90 40 65 Z" fill="#2E86C1"/>
+    
+    <path d="M 66 68 h 8 v 8 h 8 v 8 h -8 v 8 h -8 v -8 h -8 v -8 h 8 z" fill="#27AE60"/>
+  </g>
+  
+  <text x="145" y="100" font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="54" font-weight="800" fill="#2C3E50" letter-spacing="-1.5">
+    Animal<tspan fill="#27AE60">Vet</tspan>
+  </text>
+</svg>
