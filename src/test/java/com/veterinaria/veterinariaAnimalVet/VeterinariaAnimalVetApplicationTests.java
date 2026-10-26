@@ -1,4 +1,4 @@
-package com.veterinaria.veterinaria;
+package com.veterinaria.veterinariaAnimalVet;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,18 +13,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class VeterinariaApplicationTests {
+class VeterinariaAnimalVetApplicationTests {
 
-	@Autowired
+    @Autowired
     private MockMvc mockMvc;
-	
-	@Test
-	void registroPublicoNoEstaDisponible() throws Exception {
+
+    @Test
+    void cargaElContextoDeLaAplicacion() {
+    }
+
+    @Test
+    void registroPublicoNoEstaDisponible() throws Exception {
         mockMvc.perform(get("/registro"))
                 .andExpect(status().is3xxRedirection());
 
         mockMvc.perform(post("/registro").with(csrf()))
                 .andExpect(status().is3xxRedirection());
     }
-
 }

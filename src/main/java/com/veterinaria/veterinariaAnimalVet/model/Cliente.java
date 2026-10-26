@@ -1,18 +1,8 @@
 package com.veterinaria.veterinariaAnimalVet.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "clientes")
@@ -37,9 +27,12 @@ public class Cliente {
     @Column(nullable = false, length = 9)
     private String telefono;
 
+    // Relación OneToMany: Un cliente tiene muchas mascotas
+    // mappedBy apunta al nombre del campo 'cliente' en la clase Mascota
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Mascota> mascotas;
 
+    // Relación OneToMany: Un cliente puede tener muchas citas (a través de sus mascotas)
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cita> citas;
     
@@ -93,5 +86,5 @@ public class Cliente {
     public void setCitas(List<Cita> citas) {
         this.citas = citas;
     }
-
+    
 }
