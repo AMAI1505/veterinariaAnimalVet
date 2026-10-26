@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es" 
+      xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="plantilla(titulo, contenido)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Sistema Veterinario</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-responsive">
+            <div class="container">
+                <div class="navbar-brand">
+                    <img th:src="@{/logovet.svg}" alt="Logo Vet" height="45" class="d-inline-block align-text-top">
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarVet"
+                    aria-controls="navbarVet" aria-expanded="false" aria-label="Toggle navigation"
+                    th:if="${activePage != null}">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarVet" th:if="${activePage != null}">
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item">
+                            <a class="nav-link responsive-link" 
+                               th:classappend="${activePage == 'citas'} ? 'text-primary' : ''" 
+                               th:href="@{/citas}">Citas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link responsive-link" 
+                               th:classappend="${activePage == 'clientes'} ? 'text-primary' : ''" 
+                               th:href="@{/clientes}">Registro de Clientes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link responsive-link" 
+                               th:classappend="${activePage == 'mascotas'} ? 'text-primary' : ''" 
+                               th:href="@{/mascotas}">Mascotas</a>
+                        </li>
+                        <!-- Administración link for PROPIETARIO role -->
+                        <li class="nav-item" sec:authorize="hasRole('PROPIETARIO')">
+                            <a class="nav-link responsive-link" 
+                               th:classappend="${activePage == 'admin'} ? 'text-primary' : ''" 
+                               th:href="@{/admin}">Administración</a>
+                        </li>
+                        <!-- Cerrar Sesión form button styled as menu link -->
+                        <li class="nav-item">
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="nav-link responsive-link" style="background: none; border: none; outline: none; cursor: pointer;">Cerrar Sesión</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="container mt-4">
+        <main class="flex-grow-1" th:replace="${contenido}"></main>
+    </div>
+
+    <footer class="footer-custom mt-auto py-4 border-top">
+        <div class="container">
+            <div class="row gy-3 align-items-center">
+                <div class="col-12 col-md-6 text-center text-md-start">
+                    <p class="mb-0"><b>© 2026 Sistema Veterinario AnimalVet</b></p>
+                    <p class="mb-0"><b>@Copyright</b></p>
+                </div>
+                <div class="col-12 col-md-6 text-center text-md-end">
+                    <p class="mb-1"><b><u>Soporte:</u></b></p>
+                    <ul class="list-unstyled mb-0 d-inline-block text-start text-md-end">
+                        <li>+51 954 623 522</li>
+                        <li>animalvet@gmail.com</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+        // Activación de validación de Bootstrap
+        (() => {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+</body>
+</html>

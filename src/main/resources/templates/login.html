@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<div th:replace="~{layout/base :: plantilla('Login - AnimalVet', ~{::main})}">
+    
+    <main class="flex-grow-1 d-flex justify-content-center align-items-center p-3 login-bg">
+        <div class="login-container">
+            <form th:action="@{/login}" method="post" class="p-4 rounded needs-validation" novalidate>
+                
+                <!-- Token CSRF se inyecta automáticamente con th:action -->
+                <div class="mb-3 text-center">
+                    <h2>Iniciar Sesión</h2>
+                </div>
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <span th:text="${error}"></span>
+                </div>
+                <div th:if="${logout}" class="alert alert-success" role="alert">
+                    <span th:text="${logout}"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="username" class="form-label"><b>Usuario</b></label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Ingresa tu usuario" required autocomplete="username">
+                    <div class="invalid-feedback">Por favor, ingresa tu usuario.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label"><b>Contraseña</b></label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Ingresa tu contraseña" required autocomplete="current-password">
+                    <div class="invalid-feedback">Por favor, ingresa tu contraseña.</div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+            </form>
+        </div>
+    </main>
+
+</div>
+</html>

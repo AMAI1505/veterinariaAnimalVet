@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+    <div th:replace="~{layout/base :: plantilla('Gestión de Mascotas - AnimalVet', ~{::main})}">
+
+        <main>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <b>Fichas Clínicas</b> 
+                    <span class="badge bg-secondary fs-6" th:text="'Rol: ' + ${rolNombre != null ? rolNombre : ''}"></span>
+                </h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregar"
+                        th:if="${puedeCrear or #authorization.expression('hasRole(''PROPIETARIO'')')}"
+                        onclick="document.getElementById('formMascota').reset(); document.getElementById('clienteId').value = ''; document.getElementById('nombreDuenoInput').value = '';">
+                    Agregar Mascota
+                </button>
+            </div>
+
+            <div class="alert alert-success alert-dismissible fade show" th:if="${mensajeExito}" role="alert">
+                <span th:text="${mensajeExito}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="mb-3" th:unless="${#lists.isEmpty(listaMascotas)}">
+                <input type="text" id="busMascotas" class="form-control" placeholder="Buscar por mascota, raza o dueño...">
+            </div>
+
+            <div class="row" id="contenedorMascotas">
+                <div class="col-md-4 mb-4" th:each="m : ${listaMascotas}">
+                    <div class="card h-100 shadow-sm border-0" th:classappend="${mascotaEditar != null and mascotaEditar.id == m.id} ? 'border border-warning border-3' : ''">
+                        <img th:src="${m.fotoUrl != null ? m.fotoUrl : '/pet-placeholder.svg'}" class="card-img-top" alt="Foto de la mascota" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary fw-bold" th:text="${m.nombre}"></h5>
+                            <hr>
+                            <ul class="list-unstyled mb-0">
+                                <li><strong>Especie:</strong> <span th:text="${m.especie}"></span></li>
+                                <li><strong>Raza:</strong> <span th:text="${m.raza}"></span></li>
+                                <li><strong>Peso:</strong> <span th:text="${m.peso}"></span></li>
+                                <li><strong>Color:</strong> <span th:text="${m.color}"></span></li>
+                                <li><strong>Dueño:</strong> 
+                                    <span th:text="${m.cliente != null ? m.cliente.nombre : 'Sin dueño asignado'}"></span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="card-footer bg-white border-0 pt-0" th:if="${puedeEditar or puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}">
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/mascotas/{id}/historial(id=${m.id})}" class="btn btn-sm btn-outline-success flex-fill">Historial</a>
+
+                                <a th:if="${puedeEditar or #authorization.expression('hasRole(''PROPIETARIO'')')}"
+                                   th:href="@{/mascotas/editar/{id}(id=${m.id})}"
+                                   class="btn btn-sm btn-outline-warning flex-fill text-center">
+                                    Editar
+                                </a>
+
+                                <form th:if="${puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}"
+                                      th:action="@{/mascotas/eliminar}" method="post" class="flex-fill">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <input type="hidden" name="id" th:value="${m.id}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100" onclick="return confirm('¿Eliminar esta ficha clínica de forma permanente?');">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 text-center text-muted py-5" th:if="${#lists.isEmpty(listaMascotas)}">
+                    <p>No hay mascotas registradas actualmente.</p>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalAgregar" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/mascotas}" method="post" enctype="multipart/form-data" id="formMascota" th:object="${nuevaMascota}" class="needs-validation" novalidate>
+                            <div class="modal-header bg-primary text-white">
+                                <h5 class="modal-title">Registrar Nueva Mascota</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3"><label class="form-label" for="fotoMascota">Foto (JPG, PNG o WEBP, máx. 5 MB)</label><input class="form-control" type="file" name="foto" id="fotoMascota" accept="image/jpeg,image/png,image/webp"></div>
+                                <div class="mb-3">
+                                    <label for="nombrePet" class="form-label">Nombre de la Mascota</label>
+                                    <input type="text" th:field="*{nombre}" class="form-control" id="nombrePet" placeholder="Nombre" required minlength="3" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                    <div class="invalid-feedback">El nombre es obligatorio, debe tener al menos 3 caracteres.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="especiePet" class="form-label">Especie</label>
+                                    <input type="text" th:field="*{especie}" class="form-control" id="especiePet" placeholder="Ej: Perro, Gato" required minlength="3" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                    <div class="invalid-feedback">La especie es obligatoria, debe tener al menos 3 caracteres.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('especie')}" th:errors="*{especie}"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="razaPet" class="form-label">Raza</label>
+                                    <input type="text" th:field="*{raza}" class="form-control" id="razaPet" placeholder="Raza" required minlength="3" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                    <div class="invalid-feedback">La raza es obligatoria, debe tener al menos 3 caracteres.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('raza')}" th:errors="*{raza}"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="pesoPet" class="form-label">Peso (Kg)</label>
+                                    <input type="text" th:field="*{peso}" class="form-control" id="pesoPet" placeholder="Peso" required pattern="^\d+(\.\d{1,2})?$" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                                    <div class="invalid-feedback">El peso es obligatorio.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('peso')}" th:errors="*{peso}"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="colorPet" class="form-label">Color</label>
+                                    <input type="text" th:field="*{color}" class="form-control" id="colorPet" placeholder="Color" required minlength="3" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                    <div class="invalid-feedback">El color es obligatorio, debe tener al menos 3 caracteres.</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('color')}" th:errors="*{color}"></div>
+                                </div>
+
+                                <!-- Campo oculto ID del cliente -->
+                                <input type="hidden" th:field="*{cliente.id}" id="clienteId">
+
+                                <div class="mb-3">
+                                    <label for="nombreDuenoInput" class="form-label">Selecciona Dueño</label>
+                                    <div class="input-group">
+                                        <input type="text" id="nombreDuenoInput" class="form-control" placeholder="Ninguno" readonly required>
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalSelectorCliente">
+                                            Buscar Dueño
+                                        </button>
+                                        <div class="invalid-feedback">Debes seleccionar un dueño.</div>
+                                    </div>
+                                    <div class="text-danger small mt-1" th:if="${#fields.hasErrors('cliente')}" th:errors="*{cliente}"></div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Guardar Mascota</button>
+                            </div>
+
+                            <script th:if="${#fields.hasAnyErrors() and mascotaEditar == null}">
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    new bootstrap.Modal(document.getElementById('modalAgregar')).show();
+                                });
+                            </script>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalSelectorCliente" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info text-white">
+                            <h5 class="modal-title">Seleccionar Dueño</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div th:if="${#lists.isEmpty(listaClientes)}" class="text-center py-3">
+                                <p class="text-muted">No hay clientes registrados.</p>
+                            </div>
+
+                            <table class="table table-hover" th:unless="${#lists.isEmpty(listaClientes)}">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="c : ${listaClientes}">
+                                        <td th:text="${c.nombre}"></td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-success btn-seleccionar"
+                                                    th:data-id="${c.id}"
+                                                    th:data-nombre="${c.nombre}"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modalAgregar">
+                                                Seleccionar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalEditarMascota" tabindex="-1" th:if="${mascotaEditar != null}">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/mascotas/editar}" method="post" enctype="multipart/form-data" th:object="${mascotaEditar}" class="needs-validation" novalidate>
+                            <div class="mb-3"><label class="form-label" for="fotoMascotaEdit">Actualizar foto</label><input class="form-control" type="file" name="foto" id="fotoMascotaEdit" accept="image/jpeg,image/png,image/webp"></div>
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" th:field="*{id}">
+                            <div class="modal-header bg-warning text-dark">
+                                <h5 class="modal-title">Editar Mascota</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="nombreEdit" class="form-label fw-bold">Nombre</label>
+                                    <input type="text" th:field="*{nombre}" class="form-control" id="nombreEdit" required minlength="3" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                    <div class="invalid-feedback">Obligatorio (mín 3 caracteres, solo letras).</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="especieEdit" class="form-label fw-bold">Especie</label>
+                                    <input type="text" th:field="*{especie}" class="form-control" id="especieEdit" required minlength="3" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                    <div class="invalid-feedback">Obligatorio (mín 3 caracteres, solo letras).</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="razaEdit" class="form-label fw-bold">Raza</label>
+                                    <input type="text" th:field="*{raza}" class="form-control" id="razaEdit" required minlength="3" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                    <div class="invalid-feedback">Obligatorio (mín 3 caracteres, solo letras).</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="pesoEdit" class="form-label fw-bold">Peso (kg)</label>
+                                    <input type="text" th:field="*{peso}" class="form-control" id="pesoEdit" required pattern="^\d+(\.\d{1,2})?$" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                                    <div class="invalid-feedback">Obligatorio.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="colorEdit" class="form-label fw-bold">Color</label>
+                                    <input type="text" th:field="*{color}" class="form-control" id="colorEdit" required minlength="3" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,}$" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                    <div class="invalid-feedback">Obligatorio (mín 3 caracteres, solo letras).</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="clienteEdit" class="form-label fw-bold">Dueño</label>
+                                    <select th:field="*{cliente.id}" class="form-select" id="clienteEdit" required>
+                                        <option value="">-- Selecciona --</option>
+                                        <option th:each="c : ${listaClientes}"
+                                                th:value="${c.id}"
+                                                th:selected="${mascotaEditar.cliente != null and mascotaEditar.cliente.id == c.id}"
+                                                th:text="${c.nombre}">
+                                        </option>
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona dueño.</div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <a th:href="@{/mascotas}" class="btn btn-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-warning text-dark">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Abrir modal de edición automáticamente si hay mascotaEditar -->
+            <script th:if="${mascotaEditar != null}">
+                document.addEventListener("DOMContentLoaded", function() {
+                    new bootstrap.Modal(document.getElementById('modalEditarMascota')).show();
+                });
+            </script>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    // Buscador de mascotas
+                    const buscador = document.getElementById("busMascotas");
+                    if (buscador) {
+                        buscador.addEventListener("keyup", function () {
+                            let texto = this.value.toLowerCase();
+                            document.querySelectorAll(".mascota-card").forEach(card => {
+                                let contenido = card.innerText.toLowerCase();
+                                card.style.display = contenido.includes(texto) ? "" : "none";
+                            });
+                        });
+                    }
+
+                    // Selección de dueño desde el modal selector
+                    document.querySelectorAll('.btn-seleccionar').forEach(button => {
+                        button.addEventListener('click', function () {
+                            document.getElementById('clienteId').value = this.getAttribute('data-id');
+                            document.getElementById('nombreDuenoInput').value = this.getAttribute('data-nombre');
+                        });
+                    });
+                });
+            </script>
+        </main>
+
+    </div>
+</html>
