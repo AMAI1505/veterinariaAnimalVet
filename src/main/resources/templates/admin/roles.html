@@ -32,7 +32,7 @@
             <p>No hay roles definidos.</p>
         </div>
 
-         <div class="card border-0 shadow-sm mb-4" th:unless="${#lists.isEmpty(listaRoles)}">
+        <div class="card border-0 shadow-sm mb-4" th:unless="${#lists.isEmpty(listaRoles)}">
             <div class="card-header bg-dark text-white">
                 <strong>Roles Definidos</strong>
             </div>
@@ -74,6 +74,7 @@
                 </table>
             </div>
         </div>
+
         <div class="modal fade" id="modalCrearRol" tabindex="-1">
             <div class="modal-dialog">
                 <div class="modal-content">

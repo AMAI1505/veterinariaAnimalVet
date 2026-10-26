@@ -38,6 +38,7 @@
                             <th>Hora / Fecha</th>
                             <th>Mascota</th>
                             <th>Dueño</th>
+                            <th>Veterinario</th>
                             <th>Motivo</th>
                             <th>Estado</th>
                             <th class="text-center" th:if="${puedeEditar or puedeEliminar or #authorization.expression('hasRole(''PROPIETARIO'')')}">Acciones</th>
@@ -48,6 +49,7 @@
                             <td th:text="${cita.fechaHora}"></td>
                             <td th:text="${cita.mascota != null ? cita.mascota.nombre : 'Sin mascota'}"></td>
                             <td th:text="${cita.cliente != null ? cita.cliente.nombre : 'Sin dueño'}"></td>
+                            <td th:text="${cita.veterinario != null ? cita.veterinario.username : 'Sin asignar'}"></td>
                             <td th:text="${cita.motivo}"></td>
                             <td>
                                 <span th:class="${cita.estado == 'Pendiente' ? 'badge bg-warning text-dark' : 'badge bg-success'}" 
@@ -112,6 +114,11 @@
                                     <input type="text" class="form-control" id="duenoVisible" placeholder="Se completará automáticamente..." readonly>
                                 </div>
 
+                                <div class="mb-3">
+                                    <label class="form-label" for="veterinario">Veterinario</label>
+                                    <select class="form-select" id="veterinario" th:field="*{veterinario.id}" required><option value="">Seleccionar profesional</option><option th:each="v : ${listaVeterinarios}" th:value="${v.id}" th:text="${v.username}"></option></select>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('veterinario')}" th:errors="*{veterinario}"></div>
+                                </div>
                                 <div class="mb-3">
                                     <label for="motivo" class="form-label">Motivo de la Cita</label>
                                     <input type="text" th:field="*{motivo}" class="form-control" id="motivo" placeholder="Ingresa motivo de consulta" required minlength="3" maxlength="100">
@@ -180,6 +187,10 @@
                                     <input type="text" class="form-control" id="duenoVisibleEdit"
                                            th:value="${citaEditar.cliente != null ? citaEditar.cliente.nombre : ''}"
                                            placeholder="Dueño" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" for="veterinarioEdit">Veterinario</label>
+                                    <select class="form-select" id="veterinarioEdit" th:field="*{veterinario.id}" required><option value="">Seleccionar profesional</option><option th:each="v : ${listaVeterinarios}" th:value="${v.id}" th:text="${v.username}"></option></select>
                                 </div>
                                 <div class="mb-3">
                                     <label for="motivoEdit" class="form-label">Motivo</label>

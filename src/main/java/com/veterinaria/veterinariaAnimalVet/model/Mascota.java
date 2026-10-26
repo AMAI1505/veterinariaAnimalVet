@@ -1,21 +1,8 @@
 package com.veterinaria.veterinariaAnimalVet.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "mascotas")
@@ -50,11 +37,15 @@ public class Mascota {
     @Column(nullable = false, length = 30)
     private String color;
 
+    @Column(name = "foto_url", length = 500)
+    private String fotoUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
     @NotNull(message = "Debes seleccionar un dueño para la mascota")
     private Cliente cliente;
 
+    // Relación OneToMany: Una mascota puede tener muchas citas
     @OneToMany(mappedBy = "mascota", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cita> citas;
     
@@ -105,6 +96,9 @@ public class Mascota {
         return color;
     }
 
+    public String getFotoUrl() { return fotoUrl; }
+    public void setFotoUrl(String fotoUrl) { this.fotoUrl = fotoUrl; }
+
     public void setColor(String color) {
         this.color = color;
     }
@@ -124,5 +118,6 @@ public class Mascota {
     public void setCitas(List<Cita> citas) {
         this.citas = citas;
     }
+    
     
 }
