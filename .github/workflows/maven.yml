@@ -1,0 +1,25 @@
+name: Integracion Continua - Veterinaria
+
+on:
+  push:
+    branches: ["main", "CarlosCastillo"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Ejecutar pruebas y compilacion
+        run: mvn -B clean verify
