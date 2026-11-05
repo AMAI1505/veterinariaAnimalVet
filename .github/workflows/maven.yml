@@ -1,10 +1,10 @@
-name: Integracion Continua - Veterinaria
+name: Integracion Continua - Calculadora
 
 on:
   push:
-    branches: ["main", "CarlosCastillo"]
+    branches: [main]
   pull_request:
-    branches: ["main"]
+    branches: [main]
 
 jobs:
   pruebas:
@@ -14,12 +14,13 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
-      - name: Configurar Java
-        uses: actions/setup-java@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v5
         with:
-          java-version: '25'
-          distribution: 'temurin'
-          cache: maven
+          python-version: '3.12'
 
-      - name: Ejecutar pruebas y compilacion
-        run: mvn -B clean verify
+      - name: Verificar version de Python
+        run: python --version
+
+      - name: Ejecutar pruebas automaticas
+        run: python -m unittest -v
