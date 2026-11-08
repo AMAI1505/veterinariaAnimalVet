@@ -2,9 +2,9 @@ name: Integracion Continua - Veterinaria
 
 on:
   push:
-    branches: ["main", "CarlosCastillo", "DulceNavarro]
+    branches: ["main", "CarlosCastillo", "DulceNavarro"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "DulceNavarro"]
 
 jobs:
   pruebas:
