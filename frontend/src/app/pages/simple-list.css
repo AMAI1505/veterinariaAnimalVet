@@ -1,0 +1,97 @@
+.panel { overflow: hidden; border: 1px solid #e4ebe6; border-radius: 16px; background: #fff; }
+.table-wrap { overflow: auto; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+.pet-list-table.without-actions th:last-child,.pet-list-table.without-actions td:last-child { display:none; }
+th { padding: 13px 16px; color: #64746a; background: #f8faf8; font-size: .74rem; letter-spacing: .04em; text-transform: uppercase; }
+td { padding: 15px 16px; border-top: 1px solid #eff2f0; color: #40554a; font-size: .9rem; }
+.empty-row { padding: 46px; color: #738178; text-align: center; }
+.text-action { padding: 5px 7px; border: 0; color: #247b55; background: transparent; cursor: pointer; }
+.text-action.danger { color: #ae4540; }
+.modal-backdrop { position: fixed; z-index: 10; inset: 0; display: grid; place-items: center; padding: 20px; background: #122b2180; }
+.modal-card { width: min(540px, 100%); max-height: 90vh; overflow: auto; padding: 26px; border-radius: 18px; background: white; box-shadow: 0 25px 70px #10271d40; }
+.modal-card h2 { margin: 0 0 22px; color: #173b2e; }
+.modal-card form { display: grid; gap: 14px; }
+.modal-card label { display: grid; gap: 7px; color: #3b5145; }
+.modal-card input, .modal-card select { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid #dbe5de; border-radius: 9px; background: white; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.notice { margin: 0 0 18px; padding: 12px 15px; border-radius: 10px; color: #24734f; background: #e8f5ed; }
+.notice.error, .form-error { color: #993936; background: #fff0ee; }
+.form-error { margin: 0; padding: 10px; font-size: .85rem; }
+.pet-search { display: grid; grid-template-columns: minmax(150px, auto) minmax(240px, 430px); align-items: center; gap: 14px; margin: 0 0 18px; padding: 16px 20px; border: 1px solid #e4ebe6; border-radius: 14px; background: #fff; }
+.pet-search label { color: #3b5145; font-weight: 650; }
+.pet-search input { width: 100%; min-height: 44px; padding: 10px 13px; border: 1px solid #dbe5de; border-radius: 10px; background: #fbfdfb; }
+.modal-card.history-modal { width: min(900px, 100%); padding: 28px; }
+.history-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.history-title h2 { margin: 0; color: #173b2e; font-size: 1.65rem; }
+.history-title .eyebrow { margin: 0 0 5px; color: #328668; font-size: .76rem; font-weight: 750; letter-spacing: .1em; }
+.history-profile { display: grid; grid-template-columns: 150px 1fr; align-items: center; gap: 24px; margin: 0 0 26px; padding: 22px; border: 1px solid #e8efeb; border-radius: 16px; background: #fbfdfc; }
+.paw-badge { display: grid; width: 132px; aspect-ratio: 1; place-items: center; border-radius: 50%; color: #fff; background: #20af91; font-size: 3.8rem; }
+.history-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 24px; }
+.history-facts p { margin: 0; color: #65756c; }
+.history-facts strong { color: #314a3d; }
+.history-section-title { margin: 0 0 14px; color: #173b2e; }
+.history-entry { margin: 0 0 13px; padding: 18px 20px; border: 1px solid #edf1ef; border-left: 4px solid #2a8b68; border-radius: 12px; background: #f8faf9; }
+.history-entry h3 { margin: 0 0 5px; color: #344a40; }
+.history-entry p { margin: 8px 0; color: #56665d; white-space: pre-wrap; }
+.history-entry-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.history-entry-head .muted { margin-top: 0; }
+.history-status { flex: none; padding: 4px 9px; border-radius: 999px; color: #19764f; background: #dff3e9; font-size: .75rem; font-weight: 700; }
+.history-empty { padding: 24px; border-radius: 12px; color: #687970; background: #f7faf8; text-align: center; }
+.history-pending { margin: 10px 0 0; color: #687970; font-size: .9rem; }
+.pets-page .page-heading h1 { color:#174b35; }
+.pets-page .page-heading h1::after { display:block; width:46px; height:4px; margin-top:8px; border-radius:6px; background:linear-gradient(90deg,#23784e,#71bd8b); content:""; }
+.pets-page .pet-search { border-color:#cde2d3; background:linear-gradient(110deg,#eff8f1,#fff 82%); box-shadow:0 7px 20px #1b634010; }
+.pets-page .pet-search label { color:#246543; }
+.pets-page .pet-search input { border-color:#cee1d4; background:#fff; }
+.pets-page .pet-search input:focus { border-color:#4b9a68; outline:3px solid #59a9782e; }
+.pets-page .panel { border-color:#cfe3d5; box-shadow:0 14px 34px #1a63400c; }
+.pets-page th { color:#32694a; background:#eaf5ed; }
+.pets-page td { border-top-color:#e5efe8; }
+.pets-page tbody tr:nth-child(even) td { background:#fbfdfb; }
+.pets-page tbody tr:hover td { background:#f0f8f2; }
+.pets-page td strong { color:#1e6845; }
+.pets-page .text-action { border-radius:7px; color:#176744; font-weight:700; }
+.pets-page .text-action:hover { background:#e5f3e9; }
+.pets-page .history-profile { border-color:#cfe5d7; background:linear-gradient(110deg,#edf8f1,#fff); }
+.pets-page .history-entry { border-color:#dcebe1; border-left-color:#2e8d5b; background:#f4faf6; }
+.pets-page .history-entry:nth-of-type(even) { border-left-color:#65a879; background:#fbfdfb; }
+.pets-page .history-status { color:#176744; background:#dff1e5; }
+.pets-page .table-wrap { overflow:visible; }
+.pets-page .pet-list-table { width:100%; table-layout:fixed; }
+.pets-page .pet-list-table th,.pets-page .pet-list-table td { overflow-wrap:anywhere; white-space:normal; }
+.pets-page .pet-list-table th:nth-child(1) { width:9%; }
+.pets-page .pet-list-table th:nth-child(2) { width:9%; }
+.pets-page .pet-list-table th:nth-child(3) { width:6%; }
+.pets-page .pet-list-table th:nth-child(4) { width:7%; }
+.pets-page .pet-list-table th:nth-child(5) { width:10%; }
+.pets-page .pet-list-table th:nth-child(6) { width:7%; }
+.pets-page .pet-list-table th:nth-child(7) { width:12%; }
+.pets-page .pet-list-table th:nth-child(8) { width:8%; }
+.pets-page .pet-list-table th:nth-child(9) { width:6%; }
+.pets-page .pet-list-table th:nth-child(10) { width:8%; }
+.pets-page .pet-list-table th:nth-child(11) { width:18%; }
+@media(max-width:1180px) {
+  .pets-page .pet-list-table { display:block; width:100%; }
+  .pets-page .pet-list-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+  .pets-page .pet-list-table tbody { display:grid; gap:12px; }
+  .pets-page .pet-list-table tbody tr { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); padding:7px 10px; border:1px solid #dcebe1; border-radius:13px; background:linear-gradient(115deg,#f1f8f3,#fff 75%); box-shadow:0 5px 14px #1a63400a; }
+  .pets-page .pet-list-table tbody td { display:flex; min-width:0; flex-direction:column; gap:4px; padding:9px 8px; border:0; background:transparent!important; font-size:.84rem; }
+  .pets-page .pet-list-table tbody td::before { color:#4b795e; font-size:.68rem; font-weight:800; letter-spacing:.055em; text-transform:uppercase; }
+  .pets-page .pet-list-table tbody td:nth-child(1)::before { content:'Mascota'; }
+  .pets-page .pet-list-table tbody td:nth-child(2)::before { content:'Especie / raza'; }
+  .pets-page .pet-list-table tbody td:nth-child(3)::before { content:'Sexo'; }
+  .pets-page .pet-list-table tbody td:nth-child(4)::before { content:'Esterilizado'; }
+  .pets-page .pet-list-table tbody td:nth-child(5)::before { content:'Dueño'; }
+  .pets-page .pet-list-table tbody td:nth-child(6)::before { content:'DNI'; }
+  .pets-page .pet-list-table tbody td:nth-child(7)::before { content:'Correo del dueño'; }
+  .pets-page .pet-list-table tbody td:nth-child(8)::before { content:'Teléfono'; }
+  .pets-page .pet-list-table tbody td:nth-child(9)::before { content:'Peso'; }
+  .pets-page .pet-list-table tbody td:nth-child(10)::before { content:'Color'; }
+  .pets-page .pet-list-table tbody td:nth-child(11)::before { content:'Acciones'; }
+  .pets-page .pet-list-table.without-actions tbody td:last-child { display:none; }
+  .pets-page .pet-list-table tbody td.empty-row { display:block; grid-column:1/-1; padding:28px 12px; text-align:center; }
+  .pets-page .pet-list-table tbody td.empty-row::before { content:none; }
+}
+@media(max-width: 600px){.form-row{grid-template-columns:1fr}.modal-card{padding:20px}}
+@media(max-width: 650px){.pet-search{grid-template-columns:1fr;gap:8px}.modal-card.history-modal{padding:20px}.history-profile{grid-template-columns:1fr;justify-items:center}.history-facts{grid-template-columns:1fr;width:100%}}

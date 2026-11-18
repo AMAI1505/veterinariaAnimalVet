@@ -1,0 +1,35 @@
+.customer-page-heading { justify-content:center; margin-bottom:28px; text-align:center; }
+.customer-page-heading h1 { width:100%; }
+.customer-page .page-heading h1 { color:#174b35; }
+.customer-page .panel { border-color:#cfe3d5; box-shadow:0 14px 34px #1a63400c; }
+.customer-page .customer-appointments-table th { color:#32694a; background:#eaf5ed; }
+.customer-page .customer-appointments-table td { border-top-color:#e3eee6; }
+.customer-page .customer-appointments-table tbody tr:nth-child(even) td { background:#fbfdfb; }
+.customer-page .customer-appointments-table tbody tr:hover td { background:#f0f8f2; }
+.customer-appointments-table { width:100%; table-layout:fixed; }
+.customer-appointments-table .date-col { width:22%; }
+.customer-appointments-table .pet-col { width:18%; }
+.customer-appointments-table .professional-col { width:20%; }
+.customer-appointments-table .reason-col { width:22%; }
+.customer-appointments-table .status-col { width:18%; }
+.customer-appointments-table th,.customer-appointments-table td { padding-left:20px; padding-right:20px; overflow-wrap:anywhere; white-space:normal; }
+.customer-appointments-table .status { display:inline-flex; align-items:center; justify-content:center; padding:7px 13px; border:0; border-radius:999px; color:#14784f; background:#e5f4eb; font-size:.84rem; font-weight:700; line-height:1.2; white-space:nowrap; }
+.customer-appointments-table .status.scheduled { color:#14784f; background:#e5f4eb; }
+.customer-appointments-table .status.completed { color:#68756c; background:#eef1ef; }
+@media(max-width:650px) {
+  .customer-page .table-wrap { overflow:visible; }
+  .customer-appointments-table { display:block; width:100%; }
+  .customer-appointments-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+  .customer-appointments-table tbody { display:grid; gap:12px; }
+  .customer-appointments-table tbody tr { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); padding:8px 10px; border:1px solid #dcebe1; border-radius:13px; background:linear-gradient(115deg,#f1f8f3,#fff 75%); box-shadow:0 5px 14px #1a63400a; }
+  .customer-appointments-table tbody td { display:flex; min-width:0; flex-direction:column; gap:4px; padding:9px 8px; border:0; background:transparent!important; font-size:.84rem; }
+  .customer-appointments-table tbody td::before { color:#4b795e; font-size:.68rem; font-weight:800; letter-spacing:.055em; text-transform:uppercase; }
+  .customer-appointments-table tbody td:nth-child(1)::before { content:'Fecha y hora'; }
+  .customer-appointments-table tbody td:nth-child(2)::before { content:'Mascota'; }
+  .customer-appointments-table tbody td:nth-child(3)::before { content:'Profesional'; }
+  .customer-appointments-table tbody td:nth-child(4)::before { content:'Motivo'; }
+  .customer-appointments-table tbody td:nth-child(5)::before { content:'Estado'; }
+  .customer-appointments-table tbody td:nth-child(5) { grid-column:1/-1; }
+  .customer-appointments-table tbody td.empty-row { display:block; grid-column:1/-1; padding:28px 12px; text-align:center; }
+  .customer-appointments-table tbody td.empty-row::before { content:none; }
+}
