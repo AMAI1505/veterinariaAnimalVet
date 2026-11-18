@@ -7,6 +7,8 @@ import { customerGuard } from './services/customer.guard';
 import { authGuard } from './services/auth.guard';
 import { ArticlesComponent } from './pages/articles';
 import { ErrorPageComponent } from './pages/error-page';
+import { PetsComponent } from './pages/pets';
+import { petsGuard } from './services/pets.guard';
 
 export const routes: Routes = [
   { path: 'error/:status', component: ErrorPageComponent },
@@ -20,6 +22,11 @@ export const routes: Routes = [
     path: 'mis-citas',
     component: MyAppointmentsComponent,
     canActivate: [authGuard, customerGuard]
+  },
+  {
+    path: 'mis-mascotas',
+    component: PetsComponent,
+    canActivate: [authGuard, petsGuard]
   },
   { path: '**', component: ErrorPageComponent, data: { status: '404' } }
 ];
