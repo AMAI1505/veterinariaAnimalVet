@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+.env
+**/target/
+**/node_modules/
+**/dist/
+backend/data/
+*.mv.db
+*.trace.db
+*.log
+*.err
+**/.angular/
+/data/
