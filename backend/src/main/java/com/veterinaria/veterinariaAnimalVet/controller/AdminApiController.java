@@ -34,7 +34,7 @@ public class AdminApiController {
     @GetMapping("/{id}") @Transactional(readOnly = true)
     public DoctorDto obtener(@PathVariable Long id) { return DoctorDto.from(personal(id)); }
 
-    @PostMapping @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping @ResponseStatus(HttpStatus.CREATED) @Transactional
     public DoctorDto crear(@Valid @RequestBody DoctorRequest request) {
         String email=request.correo().trim().toLowerCase(Locale.ROOT);
         if (usuarios.existsByUsername(email)) throw new ResponseStatusException(HttpStatus.CONFLICT,"El correo ya está registrado.");
