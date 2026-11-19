@@ -4,6 +4,7 @@ import { AuthService } from './auth';
 
 export const customerGuard: CanActivateFn = async () => {
   const auth = inject(AuthService);
+  const router = inject(Router);
   await auth.loadSession();
-  return auth.user()?.role === 'CLIENTE' ? true : inject(Router).createUrlTree(['/error', '403']);
+  return auth.user()?.role === 'CLIENTE' ? true : router.createUrlTree(['/error', '403']);
 };
