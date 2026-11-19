@@ -1,0 +1,39 @@
+.schedule-date-control { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; padding: 10px 0; }
+.schedule-date-control input { width: 202px; min-height: 46px; padding: 8px 12px; border: 1px solid #dbe5de; border-radius: 10px; background: #fff; color: #183c2e; font: inherit; font-size: 1.05rem; }
+.date-nav-button { display: grid; min-width: 43px; height: 43px; place-items: center; padding: 0 12px; border: 1px solid #dbe5de; border-radius: 10px; background: #fff; color: #247b55; font-size: 1.25rem; font-weight: 700; cursor: pointer; }
+.date-nav-button:hover { background: #f2f8f4; }
+.today-button { min-width: 60px; font-size: 1rem; }
+.schedule-panel { overflow: hidden; border: 1px solid #e4ebe6; border-radius: 16px; background: #fff; box-shadow: 0 10px 30px #1a463010; }
+.schedule-scroll { overflow-x: auto; }
+.week-calendar { min-width: 820px; }
+.week-header, .week-body { display: grid; grid-template-columns: 66px repeat(7,minmax(100px,1fr)); }
+.week-header { position: sticky; z-index: 2; top: 0; background: #f8faf8; }
+.time-corner, .day-header { display: grid; min-height: 54px; place-items: center; border-right: 1px solid #e9efea; border-bottom: 1px solid #e5ece7; }
+.day-header { align-content: center; gap: 3px; color: #52675b; font-size: .82rem; font-weight: 750; }
+.day-header span { color: #819087; font-size: .72rem; font-weight: 500; }
+.week-body { position: relative; }
+.time-axis { display: flex; flex-direction: column; }
+.hour-label { position: relative; flex: none; padding: 0 8px; color: #819087; font-size: .72rem; text-align: right; transform: translateY(-8px); }
+.day-column { position: relative; min-width: 0; border-right: 1px solid #edf1ee; background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(64px - 1px), #e9efea calc(64px - 1px), #e9efea 64px); }
+.day-column:last-child { border-right: 0; }
+.shift-block { position: absolute; right: 6px; left: 6px; display: flex; flex-direction: column; gap: 6px; overflow: hidden; padding: 12px 10px; border-left: 4px solid #247b55; border-radius: 9px; color: #23563d; background: linear-gradient(145deg,#e5f4e9,#f1f8f3); box-shadow: 0 3px 10px #1f654810; }
+.shift-block strong { color: #1d6343; font-size: .82rem; }
+.shift-block span { font-size: .78rem; font-weight: 700; }
+.shift-block small { color: #668272; font-size: .7rem; }
+.second-shift-block { padding-top: 10px; }
+.break-gap { position: absolute; right: 6px; left: 6px; background: transparent; }
+.day-off { position: absolute; top: 50%; left: 50%; color: #b1bbb4; font-size: .76rem; transform: translate(-50%,-50%) rotate(-90deg); }
+.schedule-empty { display: grid; justify-items: center; padding: 60px 24px; text-align: center; }
+.schedule-empty > span { color: #55a77b; font-size: 2rem; }
+.schedule-empty h3 { margin: 12px 0 6px; color: #214632; }
+.schedule-empty p { margin: 0; color: #718078; }
+@media (max-width: 600px) {
+  .schedule-date-control { flex-wrap: wrap; gap: 8px; }
+  .schedule-date-control input { width: min(190px, calc(100vw - 170px)); }
+  .schedule-scroll { margin-right: -1px; }
+  .schedule-panel { border-radius: 12px; }
+  .week-calendar { min-width: 760px; }
+  .shift-block { right: 3px; left: 3px; padding: 9px 7px; }
+  .shift-block strong { font-size: .74rem; }
+  .shift-block span,.shift-block small { font-size: .68rem; }
+}
