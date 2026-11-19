@@ -18,10 +18,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(
         classes = VeterinariaApplication.class,
         properties = {
-                "spring.datasource.url=jdbc:h2:mem:animalvet-test;DB_CLOSE_DELAY=-1",
+                "spring.datasource.url=jdbc:h2:mem:animalvet-test;DB_CLOSE_DELAY=-1;MODE=MySQL",
                 "spring.datasource.username=sa",
                 "spring.datasource.password=",
                 "spring.datasource.driver-class-name=org.h2.Driver",
+                "spring.flyway.enabled=true",
+                "spring.jpa.hibernate.ddl-auto=validate",
                 "ANIMALVET_JWT_SECRET=integration-test-secret-key-at-least-32-bytes-long"
         })
 @AutoConfigureMockMvc
