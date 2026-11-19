@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
@@ -56,10 +57,10 @@ public class CitaApiController {
     @GetMapping("/veterinarios") @PreAuthorize("hasRole('ADMINISTRADOR') or @usuarioPermiso.puedeVer(authentication)")
     public List<VeterinarioDto> veterinarios() { return usuarios.findPersonalActivoParaCitas().stream().map(v -> new VeterinarioDto(v.getId(), v.getNombreCompleto(), v.getUsername(), v.getEspecialidad())).toList(); }
 
-    @PostMapping @ResponseStatus(HttpStatus.CREATED) @PreAuthorize("hasRole('ADMINISTRADOR') or @usuarioPermiso.puedeCrear(authentication)")
+    @PostMapping @ResponseStatus(HttpStatus.CREATED) @PreAuthorize("hasRole('ADMINISTRADOR') or @usuarioPermiso.puedeCrear(authentication)") @Transactional
     public CitaDto crear(@Valid @RequestBody CitaRequest request) { return CitaDto.from(citas.save(armarCita(request, null))); }
 
-    @PutMapping("/{id}") @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PutMapping("/{id}") @PreAuthorize("hasRole('ADMINISTRADOR')") @Transactional
     public CitaDto editar(@PathVariable Long id, @Valid @RequestBody CitaRequest request) {
         if (citas.findById(id).isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         return CitaDto.from(citas.save(armarCita(request, id)));

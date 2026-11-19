@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
@@ -42,7 +43,21 @@ export class LoginComponent {
     try {
       const user = await this.auth.login(this.username, this.password);
       await this.router.navigateByUrl(user.role === 'CLIENTE' ? '/mis-citas' : user.role === 'ADMINISTRADOR' ? '/admin/medicos' : '/citas');
-    } catch { this.error.set('No se pudo iniciar sesión. Revisa el usuario y la contraseña.'); }
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 401) {
+        const message = error.error && typeof error.error === 'object' && typeof error.error.message === 'string'
+          ? error.error.message : null;
+        this.error.set(message
+          ? `La API respondió 401: ${message}`
+          : 'El servidor respondió 401 sin un mensaje de la API.');
+      } else if (error instanceof HttpErrorResponse && error.status === 0) {
+        this.error.set('No se pudo conectar con la API. Revisa que el túnel siga activo.');
+      } else if (error instanceof HttpErrorResponse) {
+        this.error.set(`La solicitud de inicio de sesión falló (HTTP ${error.status}).`);
+      } else {
+        this.error.set('No se pudo completar el inicio de sesión. Inténtalo de nuevo.');
+      }
+    }
     finally { this.loading.set(false); }
   }
 }
