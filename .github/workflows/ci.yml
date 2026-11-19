@@ -1,0 +1,87 @@
+name: Integracion Continua - Veterinaria
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend y pruebas
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: animalvet_test
+          MYSQL_USER: animalvet_test
+          MYSQL_PASSWORD: 'CI_Test_DB_Password_2026!'
+          MYSQL_ROOT_PASSWORD: 'CI_Test_Root_Password_2026!'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=127.0.0.1 --user=root --password=$MYSQL_ROOT_PASSWORD --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    env:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:mysql://127.0.0.1:3306/animalvet_test?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: animalvet_test
+      DB_PASSWORD: 'CI_Test_DB_Password_2026!'
+      TEST_DB_DRIVER: com.mysql.cj.jdbc.Driver
+      ANIMALVET_JWT_SECRET: github-actions-test-jwt-key-2026-long-random-enough-for-ci-only
+      INITIAL_ADMIN_PASSWORD: 'CI_Admin_2026!Strong'
+      INITIAL_RECEPTION_PASSWORD: 'CI_Reception_2026!Strong'
+      INITIAL_VET_PASSWORD: 'CI_Vet_2026!Strong'
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v7
+
+      - name: Configurar Java
+        uses: actions/setup-java@v6
+        with:
+          java-version: '25'
+          distribution: temurin
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+
+      - name: Verificar backend y base de datos
+        working-directory: backend
+        run: bash ./mvnw -B clean verify
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v7
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias
+        working-directory: frontend
+        run: npm ci
+
+      - name: Compilar frontend
+        working-directory: frontend
+        run: npm run build
+
+  imagenes:
+    name: Imágenes de despliegue
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v7
+
+      - name: Construir imagen de la API
+        run: docker build --target api -t animalvet-api:ci .
+
+      - name: Construir imagen del sitio web
+        run: docker build --target web -t animalvet-web:ci .

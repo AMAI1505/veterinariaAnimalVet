@@ -2,13 +2,16 @@ package com.veterinaria.veterinariaAnimalVet;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.regex.Pattern;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -18,11 +21,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(
         classes = VeterinariaApplication.class,
         properties = {
-                "spring.datasource.url=jdbc:h2:mem:animalvet-test;DB_CLOSE_DELAY=-1",
-                "spring.datasource.username=sa",
-                "spring.datasource.password=",
-                "spring.datasource.driver-class-name=org.h2.Driver",
-                "ANIMALVET_JWT_SECRET=integration-test-secret-key-at-least-32-bytes-long"
+                "spring.datasource.url=${DB_URL:jdbc:h2:mem:animalvet-test;DB_CLOSE_DELAY=-1;MODE=MySQL}",
+                "spring.datasource.username=${DB_USERNAME:sa}",
+                "spring.datasource.password=${DB_PASSWORD:}",
+                "spring.datasource.driver-class-name=${TEST_DB_DRIVER:org.h2.Driver}",
+                "spring.flyway.enabled=true",
+                "spring.jpa.hibernate.ddl-auto=validate"
         })
 @AutoConfigureMockMvc
 class VeterinariaApplicationTests {
@@ -32,6 +36,18 @@ class VeterinariaApplicationTests {
 
     @Autowired
     private jakarta.validation.Validator validator;
+
+    @Autowired
+    private com.veterinaria.veterinariaAnimalVet.repository.ClienteRepository clienteRepository;
+
+    @Autowired
+    private com.veterinaria.veterinariaAnimalVet.repository.UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Value("${animalvet.initial-admin-password:admin123}")
+    private String initialAdminPassword;
 	
 	@Test
 	void registroPublicoNoEstaDisponible() throws Exception {
@@ -59,7 +75,7 @@ class VeterinariaApplicationTests {
 
     @Test
     void loginEntregaTokenBearerYLogoutLoRevoca() throws Exception {
-        String body = "{\"username\":\"administrador\",\"password\":\"admin123\"}";
+        String body = "{\"username\":\"administrador\",\"password\":\"" + initialAdminPassword + "\"}";
         String response = mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         var matcher = Pattern.compile("\"token\"\\s*:\\s*\"([^\"]+)\"").matcher(response);
@@ -83,19 +99,40 @@ class VeterinariaApplicationTests {
     }
 
     @Test
+    void registroPublicoCreaCuentaParaTutorRegistradoConContrasenaCifrada() throws Exception {
+        String correo = "t" + UUID.randomUUID().toString().replace("-", "") + "@e.co";
+        String dni = String.format("%08d", Math.floorMod(UUID.randomUUID().hashCode(), 100_000_000));
+        var cliente = new com.veterinaria.veterinariaAnimalVet.model.Cliente();
+        cliente.setCorreo(correo);
+        cliente.setDni(dni);
+        cliente.setNombre("Tutor de Prueba");
+        cliente.setTelefono("900000003");
+        clienteRepository.saveAndFlush(cliente);
+
+        String password = "AnimalVet-Test-2026!";
+        mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"correo\":\"" + correo + "\",\"dni\":\"" + dni + "\",\"password\":\"" + password + "\"}"))
+                .andExpect(status().isCreated());
+
+        var cuenta = usuarioRepository.findByUsername(correo).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertNotEquals(password, cuenta.getPassword());
+        org.junit.jupiter.api.Assertions.assertTrue(passwordEncoder.matches(password, cuenta.getPassword()));
+    }
+
+    @Test
     void formulariosDelBackendRechazanValoresInvalidosEnSusCampos() {
         var cita = new com.veterinaria.veterinariaAnimalVet.controller.CitaApiController.CitaRequest(null, null, null, "Higiene libre");
         var mascota = new com.veterinaria.veterinariaAnimalVet.controller.MascotaApiController.MascotaRequest(
                 "A", "X", "OTRO", null, "R", "999999999", "C", "1", "A", "123", "correo-invalido");
-        var atencion = new com.veterinaria.veterinariaAnimalVet.controller.AtencionApiController.AtencionRequest(
-                new BigDecimal("0"), "x".repeat(4001), " ", " ", null, null);
         var turno = new com.veterinaria.veterinariaAnimalVet.controller.AdminApiController.TurnoRequest(
                 "FUNDAY", true, null, null, null, 500);
         var personal = new com.veterinaria.veterinariaAnimalVet.controller.AdminApiController.DoctorRequest(
                 "A", "correo", "debil", "telefono", "OTRO", "", List.of(turno));
+        var atencion = new com.veterinaria.veterinariaAnimalVet.controller.AtencionApiController.AtencionRequest(
+                new BigDecimal("0"), "x".repeat(4001), " ", " ", null, null);
         var registro = new com.veterinaria.veterinariaAnimalVet.controller.RegistroClienteApiController.RegistroRequest(
                 "correo", "123", "debil");
-        for (Object request : List.of(cita, mascota, atencion, personal, registro)) {
+        for (Object request : List.of(cita, mascota, personal, atencion, registro)) {
             org.junit.jupiter.api.Assertions.assertFalse(validator.validate(request).isEmpty(),
                     "El formulario debe rechazar sus campos inválidos: " + request.getClass().getSimpleName());
         }
