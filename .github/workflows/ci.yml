@@ -9,6 +9,31 @@ jobs:
   backend:
     name: Backend y pruebas
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: animalvet_test
+          MYSQL_USER: animalvet_test
+          MYSQL_PASSWORD: 'CI_Test_DB_Password_2026!'
+          MYSQL_ROOT_PASSWORD: 'CI_Test_Root_Password_2026!'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=127.0.0.1 --user=root --password=$MYSQL_ROOT_PASSWORD --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    env:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:mysql://127.0.0.1:3306/animalvet_test?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: animalvet_test
+      DB_PASSWORD: 'CI_Test_DB_Password_2026!'
+      TEST_DB_DRIVER: com.mysql.cj.jdbc.Driver
+      ANIMALVET_JWT_SECRET: github-actions-test-jwt-key-2026-long-random-enough-for-ci-only
+      INITIAL_ADMIN_PASSWORD: 'CI_Admin_2026!Strong'
+      INITIAL_RECEPTION_PASSWORD: 'CI_Reception_2026!Strong'
+      INITIAL_VET_PASSWORD: 'CI_Vet_2026!Strong'
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4

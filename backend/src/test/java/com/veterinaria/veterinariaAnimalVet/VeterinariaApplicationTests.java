@@ -2,6 +2,7 @@ package com.veterinaria.veterinariaAnimalVet;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,13 +19,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(
         classes = VeterinariaApplication.class,
         properties = {
-                "spring.datasource.url=jdbc:h2:mem:animalvet-test;DB_CLOSE_DELAY=-1;MODE=MySQL",
-                "spring.datasource.username=sa",
-                "spring.datasource.password=",
-                "spring.datasource.driver-class-name=org.h2.Driver",
+                "spring.datasource.url=${DB_URL:jdbc:h2:mem:animalvet-test;DB_CLOSE_DELAY=-1;MODE=MySQL}",
+                "spring.datasource.username=${DB_USERNAME:sa}",
+                "spring.datasource.password=${DB_PASSWORD:}",
+                "spring.datasource.driver-class-name=${TEST_DB_DRIVER:org.h2.Driver}",
                 "spring.flyway.enabled=true",
-                "spring.jpa.hibernate.ddl-auto=validate",
-                "ANIMALVET_JWT_SECRET=integration-test-secret-key-at-least-32-bytes-long"
+                "spring.jpa.hibernate.ddl-auto=validate"
         })
 @AutoConfigureMockMvc
 class VeterinariaApplicationTests {
@@ -34,6 +34,9 @@ class VeterinariaApplicationTests {
 
     @Autowired
     private jakarta.validation.Validator validator;
+
+    @Value("${animalvet.initial-admin-password:admin123}")
+    private String initialAdminPassword;
 	
 	@Test
 	void registroPublicoNoEstaDisponible() throws Exception {
@@ -61,7 +64,7 @@ class VeterinariaApplicationTests {
 
     @Test
     void loginEntregaTokenBearerYLogoutLoRevoca() throws Exception {
-        String body = "{\"username\":\"administrador\",\"password\":\"admin123\"}";
+        String body = "{\"username\":\"administrador\",\"password\":\"" + initialAdminPassword + "\"}";
         String response = mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
         var matcher = Pattern.compile("\"token\"\\s*:\\s*\"([^\"]+)\"").matcher(response);
