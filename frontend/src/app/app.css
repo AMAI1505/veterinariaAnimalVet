@@ -1,0 +1,42 @@
+:host { display: block; min-height: 100vh; }
+.topbar { position: relative; z-index: 20; min-height: 76px; padding: 0 5vw; display: flex; align-items: center; gap: 42px; background: #fff; border-bottom: 1px solid #e7eee9; }
+.brand { display: inline-flex; align-items: center; gap: 8px; flex: none; color: #163d31; text-decoration: none; font-size: 1.45rem; font-weight: 800; letter-spacing: -.05em; }
+.brand-paw { width: 22px; height: 22px; flex: none; fill: #247b55; }
+.brand-name { color: #111; }
+.brand-name > span { color: #4ba67d; }
+nav { display: flex; align-items: center; gap: 26px; flex: 1; }
+nav a { color: #5d6c65; text-decoration: none; font-size: .92rem; }
+nav a:hover { color: #21805a; }
+nav a.active { padding: 9px 12px; border-radius: 9px; color: #1d6849; background: #eaf5ee; font-weight: 700; }
+.account { display: flex; align-items: center; gap: 14px; flex: none; color: #50625a; font-size: .9rem; }
+.account a.active { border-color: #b9dbc7; color: #1d6849; background: #eaf5ee; }
+.account-name { display: inline-flex; align-items: center; gap: 8px; }
+.account-name svg { width: 19px; height: 19px; flex: none; fill: none; stroke: #247b55; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.menu-toggle { display: none; width: 44px; height: 42px; flex: none; align-items: center; justify-content: center; flex-direction: column; gap: 5px; padding: 0; border: 1px solid #dce7df; border-radius: 11px; background: #f7faf8; cursor: pointer; }
+.menu-toggle span { display: block; width: 19px; height: 2px; border-radius: 2px; background: #247b55; transition: transform .18s ease, opacity .18s ease; }
+.menu-toggle[aria-expanded="true"] span:first-child { transform: translateY(7px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] span:last-child { transform: translateY(-7px) rotate(-45deg); }
+.menu-toggle:focus-visible { outline: 3px solid #45a87555; outline-offset: 3px; }
+@media (max-width: 900px) {
+  .topbar { min-height: 70px; flex-wrap: wrap; justify-content: space-between; gap: 0 14px; padding: 12px 5vw; }
+  .menu-toggle { display: flex; }
+  nav, .account { display: none; }
+  nav.open { order: 3; display: flex; flex: 1 0 100%; flex-direction: column; align-items: stretch; gap: 4px; margin-top: 12px; padding: 12px 0 4px; border-top: 1px solid #e8efe9; }
+  nav.open a { padding: 11px 12px; border-radius: 9px; }
+  nav.open a.active { background: #eaf5ee; }
+  .account.menu-open { order: 4; display: flex; flex: 1 0 100%; flex-wrap: wrap; justify-content: flex-start; gap: 10px; padding: 12px 0 2px; border-top: 1px solid #e8efe9; }
+  .account.menu-open .account-name { flex: 1 0 100%; padding: 2px 8px; }
+}
+@media (max-width: 560px) {
+  .topbar { column-gap: 12px; row-gap: 0; padding: 11px 16px; }
+  .brand { font-size: 1.25rem; }
+  .brand-paw { width: 20px; height: 20px; }
+  .menu-toggle { width: 42px; height: 40px; }
+  .account.menu-open { gap: 8px; font-size: .86rem; }
+  .account.menu-open .button { min-height: 40px; padding: 0 13px; font-size: .85rem; white-space: nowrap; }
+}
+@media (max-width: 360px) {
+  .topbar { padding-right: 11px; padding-left: 11px; }
+  .account.menu-open .button { flex: 1; }
+}

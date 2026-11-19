@@ -1,0 +1,27 @@
+:host { display: block; }
+.error-shell { display: grid; min-height: calc(100vh - 76px); place-items: center; padding: clamp(24px, 6vw, 72px) 20px; }
+.error-card { display: grid; grid-template-columns: minmax(240px, .8fr) minmax(300px, 1.2fr); width: min(900px, 100%); overflow: hidden; border: 1px solid #dce9e0; border-radius: 28px; background: #fff; box-shadow: 0 24px 70px #183b2d12; }
+.error-art { position: relative; display: grid; min-height: 360px; place-items: center; overflow: hidden; color: #fff; background: linear-gradient(145deg, #1e684b, #328865); }
+.error-art::before,.error-art::after { position: absolute; width: 310px; height: 310px; border: 1px solid #ffffff20; border-radius: 50%; content: ''; }
+.error-art::before { transform: translate(-28px, 32px); }
+.error-art::after { width: 390px; height: 390px; transform: translate(18px, 42px); }
+.paw-mark { z-index: 1; display: grid; width: 142px; height: 142px; place-items: center; border: 1px solid #ffffff38; border-radius: 50%; background: #ffffff18; font-size: 4.5rem; }
+.paw-mark span { filter: grayscale(1) brightness(0) invert(1); }
+.error-code { position: absolute; right: 24px; bottom: 16px; color: #ffffff80; font-size: 1rem; font-weight: 800; letter-spacing: .18em; }
+.error-copy { align-self: center; padding: clamp(30px, 5vw, 58px); }
+.eyebrow { margin: 0 0 14px; color: #438269; font-size: .76rem; font-weight: 800; letter-spacing: .14em; }
+.eyebrow span { color: #267b56; }
+h1 { margin: 0; color: #183b2d; font-size: clamp(2rem, 4vw, 2.8rem); letter-spacing: -.05em; line-height: 1.08; }
+.error-message { margin: 20px 0 8px; color: #385749; font-size: 1.12rem; line-height: 1.55; }
+.error-detail { margin: 0; color: #738179; line-height: 1.6; }
+.error-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+@media (max-width: 700px) {
+  .error-shell { min-height: calc(100dvh - 76px); padding: 20px 14px; }
+  .error-card { grid-template-columns: 1fr; border-radius: 20px; }
+  .error-art { min-height: 190px; }
+  .paw-mark { width: 92px; height: 92px; font-size: 3rem; }
+  .error-art::before { width: 210px; height: 210px; }
+  .error-art::after { width: 270px; height: 270px; }
+  .error-copy { padding: 28px 24px; }
+  .error-actions > * { flex: 1 1 140px; }
+}
