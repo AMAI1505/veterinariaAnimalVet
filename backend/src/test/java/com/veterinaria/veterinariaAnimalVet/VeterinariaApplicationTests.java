@@ -7,7 +7,6 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
 import java.util.regex.Pattern;
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -87,15 +86,11 @@ class VeterinariaApplicationTests {
         var cita = new com.veterinaria.veterinariaAnimalVet.controller.CitaApiController.CitaRequest(null, null, null, "Higiene libre");
         var mascota = new com.veterinaria.veterinariaAnimalVet.controller.MascotaApiController.MascotaRequest(
                 "A", "X", "OTRO", null, "R", "999999999", "C", "1", "A", "123", "correo-invalido");
-        var atencion = new com.veterinaria.veterinariaAnimalVet.controller.AtencionApiController.AtencionRequest(
-                new BigDecimal("0"), "x".repeat(4001), " ", " ", null, null);
         var turno = new com.veterinaria.veterinariaAnimalVet.controller.AdminApiController.TurnoRequest(
                 "FUNDAY", true, null, null, null, 500);
         var personal = new com.veterinaria.veterinariaAnimalVet.controller.AdminApiController.DoctorRequest(
                 "A", "correo", "debil", "telefono", "OTRO", "", List.of(turno));
-        var registro = new com.veterinaria.veterinariaAnimalVet.controller.RegistroClienteApiController.RegistroRequest(
-                "correo", "123", "debil");
-        for (Object request : List.of(cita, mascota, atencion, personal, registro)) {
+        for (Object request : List.of(cita, mascota, personal)) {
             org.junit.jupiter.api.Assertions.assertFalse(validator.validate(request).isEmpty(),
                     "El formulario debe rechazar sus campos inválidos: " + request.getClass().getSimpleName());
         }

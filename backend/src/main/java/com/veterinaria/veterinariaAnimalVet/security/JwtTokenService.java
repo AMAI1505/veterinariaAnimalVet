@@ -4,6 +4,7 @@ import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
@@ -22,12 +23,21 @@ public class JwtTokenService {
     private static final long TTL_SECONDS = 8 * 60 * 60;
     private final ObjectMapper json;
     private final String configuredSecret;
+    private final boolean production;
     private byte[] secret;
 
+    @Autowired
     public JwtTokenService(ObjectMapper json,
-            @Value("${ANIMALVET_JWT_SECRET:}") String configuredSecret) {
+            @Value("${ANIMALVET_JWT_SECRET:}") String configuredSecret,
+            @Value("${spring.profiles.active:}") String activeProfiles) {
+        this(json, configuredSecret, java.util.Arrays.stream(activeProfiles.split(","))
+                .map(String::trim).anyMatch("prod"::equalsIgnoreCase));
+    }
+
+    JwtTokenService(ObjectMapper json, String configuredSecret, boolean production) {
         this.json = json;
         this.configuredSecret = configuredSecret;
+        this.production = production;
     }
 
     @PostConstruct
@@ -37,6 +47,7 @@ public class JwtTokenService {
             if (bytes.length < 32) throw new IllegalStateException("ANIMALVET_JWT_SECRET debe tener al menos 32 bytes.");
             secret = bytes;
         } else {
+            if (production) throw new IllegalStateException("ANIMALVET_JWT_SECRET es obligatorio en producción.");
             // Desarrollo local sin variable configurada: claves nuevas en cada arranque.
             secret = new byte[32];
             new SecureRandom().nextBytes(secret);
