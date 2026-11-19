@@ -1,10 +1,11 @@
 package com.veterinaria.veterinariaAnimalVet.repository;
 
-import com.veterinaria.veterinariaAnimalVet.model.ConsultaMedica;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
+import com.veterinaria.veterinariaAnimalVet.model.ConsultaMedica;
 
 public interface ConsultaMedicaRepository extends JpaRepository<ConsultaMedica, Long> {
-    List<ConsultaMedica> findByVeterinario_Id(Long veterinarioId);
+    Optional<ConsultaMedica> findByCitaId(Long citaId);
+    java.util.List<ConsultaMedica> findByVeterinario_Id(Long veterinarioId);
+    java.util.List<ConsultaMedica> findByMascotaIdOrderByFechaAtencionDesc(Long mascotaId);
 }
