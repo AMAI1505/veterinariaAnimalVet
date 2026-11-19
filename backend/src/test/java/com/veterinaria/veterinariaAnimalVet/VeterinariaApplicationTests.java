@@ -7,9 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.regex.Pattern;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,6 +36,15 @@ class VeterinariaApplicationTests {
 
     @Autowired
     private jakarta.validation.Validator validator;
+
+    @Autowired
+    private com.veterinaria.veterinariaAnimalVet.repository.ClienteRepository clienteRepository;
+
+    @Autowired
+    private com.veterinaria.veterinariaAnimalVet.repository.UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Value("${animalvet.initial-admin-password:admin123}")
     private String initialAdminPassword;
@@ -85,6 +96,27 @@ class VeterinariaApplicationTests {
         mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"correo\":\"no-es-correo\",\"dni\":\"123\",\"password\":\"corta\"}"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void registroPublicoCreaCuentaParaTutorRegistradoConContrasenaCifrada() throws Exception {
+        String correo = "t" + UUID.randomUUID().toString().replace("-", "") + "@e.co";
+        String dni = String.format("%08d", Math.floorMod(UUID.randomUUID().hashCode(), 100_000_000));
+        var cliente = new com.veterinaria.veterinariaAnimalVet.model.Cliente();
+        cliente.setCorreo(correo);
+        cliente.setDni(dni);
+        cliente.setNombre("Tutor de Prueba");
+        cliente.setTelefono("900000003");
+        clienteRepository.saveAndFlush(cliente);
+
+        String password = "AnimalVet-Test-2026!";
+        mockMvc.perform(post("/api/auth/register").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"correo\":\"" + correo + "\",\"dni\":\"" + dni + "\",\"password\":\"" + password + "\"}"))
+                .andExpect(status().isCreated());
+
+        var cuenta = usuarioRepository.findByUsername(correo).orElseThrow();
+        org.junit.jupiter.api.Assertions.assertNotEquals(password, cuenta.getPassword());
+        org.junit.jupiter.api.Assertions.assertTrue(passwordEncoder.matches(password, cuenta.getPassword()));
     }
 
     @Test
