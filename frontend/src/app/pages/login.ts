@@ -45,7 +45,11 @@ export class LoginComponent {
       await this.router.navigateByUrl(user.role === 'CLIENTE' ? '/mis-citas' : user.role === 'ADMINISTRADOR' ? '/admin/medicos' : '/citas');
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 401) {
-        this.error.set('La API rechazó el usuario o la contraseña (401).');
+        const message = error.error && typeof error.error === 'object' && typeof error.error.message === 'string'
+          ? error.error.message : null;
+        this.error.set(message
+          ? `La API respondió 401: ${message}`
+          : 'El servidor respondió 401 sin un mensaje de la API.');
       } else if (error instanceof HttpErrorResponse && error.status === 0) {
         this.error.set('No se pudo conectar con la API. Revisa que el túnel siga activo.');
       } else if (error instanceof HttpErrorResponse) {
